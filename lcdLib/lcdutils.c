@@ -141,7 +141,7 @@ void _delay(u_char x10ms) {
 /**
  * Set area to draw to 
  **/
-void setArea(u_char xStart, u_char yStart, u_char xEnd, u_char yEnd) 
+void lcd_setArea(u_char xStart, u_char yStart, u_char xEnd, u_char yEnd) 
 {
 	_writeCommand(CASETP);
 	lcd_writeData(0);
@@ -169,7 +169,7 @@ void lcd_init()
   _writeCommand(COLMOD); //Set Color Format 16bit
   lcd_writeData(0x05);
   _writeCommand(DISPON); //display ON
-  setOrientation(ORIENTATION_VERTICAL_ROTATED);
+  lcd_setOrientation(ORIENTATION_VERTICAL_ROTATED);
 }
 
 /**
@@ -200,8 +200,8 @@ void lcd_setOrientation(u_char orientation)
 u_int lcd_rgbToBgr(u_int rgbColor)
 {
   u_int bgrColor = rgbColor & COLOR_GREEN; /* g in same bits! */
-  bgrColor |= rgbColor >> 11; 	/* r to b */
-  bgrColor |= (rgbColor << 11);	/* b to r */
+  bgrColor |= (rgbColor & 0xf800) >> 11; 	/* r to b */
+  bgrColor |= ((rgbColor & 0x1f) << 11);	/* b to r */
   return bgrColor;
 }
 

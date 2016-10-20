@@ -1,8 +1,9 @@
 /*
- * edukit.h
+ * lcdutils.c: 
  *
- *  Created on: Aug 20, 2014
- *      Author: RobG
+ *  Created on: 10/19/2016
+ *  Author: Eric Freudenthal & David Pruitt
+ *  Portions derived from EduKit code by RobG
  */
 
 #ifndef lcdutils_included
@@ -28,7 +29,7 @@ void lcd_init();
 void lcd_setOrientation(u_char orientation);
 u_char lcd_getScreenWidth();
 u_char lcd_getScreenHeight();
-
+void lcd_setArea(u_char xStart, u_char yStart, u_char xEnd, u_char yEnd);
 //
 // Colors
 //
