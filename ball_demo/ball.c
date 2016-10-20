@@ -26,7 +26,7 @@ void update_ball() {
 
 __interrupt(WDT_VECTOR) WDT(){	
 	drawArena();
-	if (++count == 5){
+	if (++count == 10) {
 		setColor(COLOR_BLACK);
 		fillCircle(px, py, RADIUS);
 		update_ball();

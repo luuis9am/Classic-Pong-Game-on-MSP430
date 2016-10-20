@@ -38,16 +38,17 @@ extern const unsigned int colors[43];
 #define LCD_CS_DIR	P1DIR
 #define LCD_CS_OUT	P1OUT
 // CS convenience defines
-#define LCD_SELECT LCD_CS_OUT &= ~LCD_CS_PIN
-#define LCD_DESELECT
+#define LCD_SELECT() LCD_CS_OUT &= ~LCD_CS_PIN
+#define LCD_DESELECT()
 //LCD_CS_OUT |= LCD_CS_PIN
+
 // Data/command
 #define LCD_DC_PIN	BIT4
 #define LCD_DC_DIR	P1DIR
 #define LCD_DC_OUT	P1OUT
 // D/C convenience defines
-#define LCD_DC_LO LCD_DC_OUT &= ~LCD_DC_PIN
-#define LCD_DC_HI LCD_DC_OUT |= LCD_DC_PIN
+#define LCD_DC_LO() LCD_DC_OUT &= ~LCD_DC_PIN
+#define LCD_DC_HI() LCD_DC_OUT |= LCD_DC_PIN
 //
 // Font selection
 // Available font sizes: 5x8, 8x12, 11x16
