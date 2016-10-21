@@ -110,11 +110,24 @@ u_char lcd_getScreenHeight() {
 /**
  * Write data to LCD 
  **/
-void lcd_writeData(u_char data) 
+static inline void 
+lcd_writeData(u_char data) 
 {
   while (UCB0STAT & UCBUSY);	/* wait for previous transfer to complete */
   LCD_DC_HI();			/* specify sending data */
   UCB0TXBUF = data;		/* send data */
+}
+
+typedef union {
+  u_char colorBytes[2];
+  u_int colorBGRWord;
+} ColorBGR;
+
+void lcd_writeColor(u_int colorBGR)
+{
+  ColorBGR colorU = {.colorBGRWord = colorBGR};
+  lcd_writeData(colorU.colorBytes[1]);
+  lcd_writeData(colorU.colorBytes[0]);
 }
 
 /**

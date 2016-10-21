@@ -5,13 +5,10 @@
  * Draw single pixel at x,y
  * Adapted from RobG's EduKit
  **/
-void drawPixel(u_char x, u_char y, u_int color) 
+void drawPixel(u_char x, u_char y, u_int colorRGB) 
 {
-  u_int colorBGR = lcd_rgbToBgr(color);
-  u_char colorHi = colorBGR >> 8;
   lcd_setArea(x, y, x, y);
-  lcd_writeData(colorHi);
-  lcd_writeData(colorBGR);
+  lcd_writeColor(lcd_rgbToBgr(colorRGB));
 }
 
 /////////////////////////
@@ -19,28 +16,26 @@ void drawPixel(u_char x, u_char y, u_int color)
 // Adapted from RobG's EduKit
 /////////////////////////
 void fillRectangle(u_char xMin, u_char yMin, u_char width, u_char height, 
-		   u_int color)
+		   u_int colorRGB)
 {
-  u_int colorBGR = lcd_rgbToBgr(color);
-  u_char colorHi = colorBGR >> 8;
+  u_int colorBGR = lcd_rgbToBgr(colorRGB);
   u_char xLimit = xMin + width, yLimit = yMin + height;
   lcd_setArea(xMin, yMin, xLimit - 1, yLimit - 1);
   u_int total = width * height;
   u_int c = 0;
   while ((c++) < total) {
-    lcd_writeData(colorHi);
-    lcd_writeData(colorBGR);
+    lcd_writeColor(colorBGR);
   }
 }
 
 /**
  * Clear screen (fill with color)
  **/
-void clearScreen(u_int color) 
+void clearScreen(u_int colorRGB) 
 {
   u_char w = lcd_getScreenWidth();
   u_char h = lcd_getScreenHeight();
-  fillRectangle(0, 0, w, h, lcd_rgbToBgr(color));
+  fillRectangle(0, 0, w, h, colorRGB);
 }
 
 /**
@@ -51,11 +46,11 @@ void clearScreen(u_int color)
  * Adapted from RobG's EduKit
  **/
 void drawString5x7(u_char x, u_char y, char *string,
-		u_int fgColor, u_int bgColor)
+		u_int fgColorRGB, u_int bgColorRGB)
 {
   u_char xs = x;
   while (*string) {
-    drawChar5x7(xs, y, *string++, fgColor, bgColor);
+    drawChar5x7(xs, y, *string++, fgColorRGB, bgColorRGB);
     xs += 6;
   }
 }
@@ -65,24 +60,21 @@ void drawString5x7(u_char x, u_char y, char *string,
 // Adapted from RobG's EduKit
 //////////////////////////////////////////////////////
 void drawChar5x7(u_char x, u_char y, char c, 
-		 u_int fgColor, u_int bgColor) {
+		 u_int fgColorRGB, u_int bgColorRGB) 
+{
   u_char col = 0;
   u_char row = 0;
   u_char bit = 0x01;
   u_char oc = c - 0x20;
-  union {
-    u_char colorBytes[2];
-    u_int colorWord;
-  } fgColorU, bgColorU, colorU;
-  fgColorU.colorWord = fgColor;
-  bgColorU.colorWord = bgColor;
+
+  u_int fgColorBGR = lcd_rgbToBgr(fgColorRGB);
+  u_int bgColorBGR = lcd_rgbToBgr(bgColorRGB);
   
   lcd_setArea(x, y, x + 4, y + 7); 
   while (row < 8) {
     while (col < 5) {
-      colorU = (font_5x7[oc][col] & bit) ? fgColorU : bgColorU;
-      lcd_writeData(colorU.colorBytes[1]);
-      lcd_writeData(colorU.colorBytes[0]);
+      u_int colorBGR = (font_5x7[oc][col] & bit) ? fgColorBGR : bgColorBGR;
+      lcd_writeColor(colorBGR);
       col++;
     }
     col = 0;
@@ -95,39 +87,48 @@ void drawChar5x7(u_char x, u_char y, char c,
 // Draw rectangle
 /////////////////////////////////////////////////////
 void drawRectOutline(u_char xMin, u_char yMin, u_char width, u_char height,
-		     u_int color)
+		     u_int colorRGB)
 {
   /* top & bot */
-  fillRectangle(xMin, yMin, width, 1, color);
-  fillRectangle(xMin, yMin + height, width, 1, color);
+  fillRectangle(xMin, yMin, width, 1, colorRGB);
+  fillRectangle(xMin, yMin + height, width, 1, colorRGB);
 
   /* left & right */
-  fillRectangle(xMin, yMin, 1, height, color);
-  fillRectangle(xMin + width, yMin, 1, height, color);
+  fillRectangle(xMin, yMin, 1, height, colorRGB);
+  fillRectangle(xMin + width, yMin, 1, height, colorRGB);
 }
 
 ///////////////////////////////////////////
-// build table chordVec[d] of circle 1/2 widths as distances d from center
+// build table chordVec[d] of circle 1/2 widths at distances d from center
 // Code adapted from RobG's EduKit
 // Uses Bresenham's circle algorithm
 ///////////////////////////////////////////
 void computeChordVec(u_char chordVec[], u_char radius) 
 {
-  int dx = radius;
-  int dy = 0;
-  int xChange = 1 - 2 * radius;
-  int yChange = 1;
-  int radiusError = 0;
-  while (dx >= dy) {
-    chordVec[dy] = dx;
-    chordVec[dx] = dy;
-    dy++;
-    radiusError += yChange;
-    yChange += 2;
-    if (2 * radiusError + xChange > 0) {
-      dx--;
-      radiusError += xChange;
-      xChange += 2;
+  int x = radius, y = 0;	/* first coordinate (radius, 0) */
+
+  // key insight: (x+1)**2 - x**2 = 2x+1
+
+  int dXSquared = 2 * x - 1;  // change in x**2 for a unit decrease in x
+  int dYSquared = 1;	    // change in y**2 for a unit increase in y
+
+  int radiusSqErr = 0;		/* (radius, 0) is on the circle  */
+  int xPrev = 0;		/* initially bogus value  to force first entry*/
+  while (x >= y) {		/* only sweep first octant */
+    chordVec[y] = x;		/* y always changes in first octant */
+
+    /* mirror into 2nd octant */
+    if (xPrev != x)		/* x sometimes repeats in first octant */
+      chordVec[x] = y;		/* only save first (max) col for y */
+    xPrev = x;
+
+    y++;			/* move vertically (slope <= -1 for first octant) */
+    radiusSqErr += dYSquared;	/* current radiusSqErr */
+    dYSquared += 2; 		/* next dYSquared */
+    if ((2 * radiusSqErr) > dXSquared) { /* only update x if error reduced */
+      x--;			/* move horizontally */
+      radiusSqErr -= dXSquared;	/* current radiusSqErr */
+      dXSquared -= 2;	      /* next dXSquared */
     }
   }
 }
