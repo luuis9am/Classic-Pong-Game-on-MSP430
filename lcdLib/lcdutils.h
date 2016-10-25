@@ -29,7 +29,7 @@ void lcd_init();
 void lcd_setOrientation(u_char orientation);
 u_char lcd_getScreenWidth();
 u_char lcd_getScreenHeight();
-void lcd_setArea(u_char xStart, u_char yStart, u_char xEnd, u_char yEnd);
+void lcd_setArea(u_char colStart, u_char rowStart, u_char colEnd, u_char rowEnd);
 void lcd_writeColor(u_int colorBGR);
 
 //

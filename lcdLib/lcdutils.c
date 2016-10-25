@@ -154,18 +154,18 @@ void _delay(u_char x10ms) {
 /**
  * Set area to draw to 
  **/
-void lcd_setArea(u_char xStart, u_char yStart, u_char xEnd, u_char yEnd) 
+void lcd_setArea(u_char colStart, u_char rowStart, u_char colEnd, u_char rowEnd) 
 {
 	_writeCommand(CASETP);
 	lcd_writeData(0);
-	lcd_writeData(xStart);
+	lcd_writeData(colStart);
 	lcd_writeData(0);
-	lcd_writeData(xEnd);
+	lcd_writeData(colEnd);
 	_writeCommand(PASETP);
 	lcd_writeData(0);
-	lcd_writeData(yStart);
+	lcd_writeData(rowStart);
 	lcd_writeData(0);
-	lcd_writeData(yEnd);
+	lcd_writeData(rowEnd);
 	_writeCommand(RAMWRP);
 }
 
