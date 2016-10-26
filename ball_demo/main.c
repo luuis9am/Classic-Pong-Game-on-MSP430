@@ -99,3 +99,12 @@ void update_ball()
   ball_moved = 1;
 }
 
+void wdt_c_handler()
+{
+  static int count = 0;
+  count ++;
+  if (count == 10) {
+    count = 0;
+    update_ball();
+  }
+}

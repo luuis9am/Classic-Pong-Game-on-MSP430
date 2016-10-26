@@ -5,6 +5,10 @@
 	.section	__interrupt_vector_11,"ax",@progbits
 	.word	WDT
 	.text
+	
+
+	.extern ball_moved
+	.extern wdt_c_handler
 WDT:
 ; start of function
 ; attributes: interrupt 
@@ -29,14 +33,7 @@ WDT:
 	PUSH	R5
 	PUSH	R4
 	; end of prologue
-	MOV.B	&count, R12
-	ADD.B	#1, R12
-	MOV.B	R12, &count
-	CMP.B	#10, R12 { JNE	.L2
-	CALL	#update_ball
-	MOV.B	#1, &ball_moved
-	MOV.B	#0, &count
-.L2:
+	CALL	#wdt_c_handler
 	; start of epilogue
 	POP	R4
 	POP	R5
@@ -50,7 +47,10 @@ WDT:
 	POP	R13
 	POP	R14
 	POP	R15
+	cmp	#0, &ball_moved
+	jz	ball_no_move
 	and	#0xffef, 0(r1)	; clear CPU off in saved SR
+ball_no_move:	
 	RETI
 	.size	WDT, .-WDT
 	.local	count
