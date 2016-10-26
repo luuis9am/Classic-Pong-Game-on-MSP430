@@ -11,9 +11,11 @@ u_char LOWER_BOUNDARY, UPPER_BOUNDARY, LEFT_BOUNDARY, RIGHT_BOUNDARY; /* Boundar
 u_char width, height;       /* screen width and height */
 u_char chords14[RADIUS+1];	/* for a circle of radius 14 */
 
-u_char pcol, prow;        /* position coordinates of ball */
+volatile u_char pcol, prow;        /* position coordinates of ball */
 signed int deltaCOL = 1, deltaROW = 1;
-u_char count = 0;    
+
+volatile u_char ball_moved = 1;
+
 
 void drawArena()
 {
@@ -28,6 +30,29 @@ fillCircle(u_char col, u_char row, u_char radius, u_char chords[], u_int color)
     u_char width = 1 + (dcol << 1);
     fillRectangle(col-dcol, row+drow, width, 1, color);
     fillRectangle(col-dcol, row-drow, width, 1, color);
+  }
+}
+
+void 
+redrawBallForever()
+{
+  static int lcol, lrow;	/* last position */
+  int _lcol, _lrow, _pcol, _prow;;
+  
+  for(;;) {
+    while (!ball_moved)
+      or_sr(0x10);		/* CPU OFF */
+    
+    /* lock out interrupts as we update state */
+    and_sr(0xfff7);		/* clear GIE (enable interrupts) */
+    ball_moved = 0;		
+    _pcol = pcol; _prow = prow;
+    _lcol = lcol; _lrow = lrow;
+    or_sr(8);		/* set GIE */
+          
+    fillCircle(_lcol, _lrow, RADIUS, chords14, COLOR_BLUE);
+    fillCircle(_pcol, _prow, RADIUS, chords14, COLOR_RED);
+    lrow = _prow; lcol = _pcol;
   }
 }
 
@@ -54,7 +79,8 @@ main()
   fillCircle(pcol, prow, RADIUS, chords14, COLOR_RED);
   computeChordVec(chords14, 14);
   
-  or_sr(0x18);  /* CPU off, GIE on */
+  or_sr(0x8);			/* GIE (enable interrupts) */
+  redrawBallForever();
 }
 
 void update_ball() 
@@ -70,15 +96,6 @@ void update_ball()
   
   pcol = pcol_new + deltaCOL;
   prow = prow_new + deltaROW;
+  ball_moved = 1;
 }
 
-__interrupt(WDT_VECTOR) WDT()
-{  
-  drawArena();
-  if (++count == 10) {
-    fillCircle(pcol, prow, RADIUS, chords14, COLOR_BLUE);
-    update_ball();
-    fillCircle(pcol, prow, RADIUS, chords14, COLOR_RED);
-    count = 0;
-  }
-}
