@@ -89,8 +89,6 @@ static void setUpSPIforLCD() {
 /**
  * Get screen dimensions
  **/
-#define LONG_EDGE_PIXELS				160
-#define SHORT_EDGE_PIXELS				132
 
 u_char lcd_getScreenWidth() {
   if (_orientation == ORIENTATION_VERTICAL
