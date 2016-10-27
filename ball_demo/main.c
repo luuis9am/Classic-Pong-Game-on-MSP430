@@ -2,6 +2,7 @@
 #include "libTimer.h"
 #include "lcdutils.h"
 #include "lcddraw.h"
+#include "switches.h"
 
 #define ARENA_WIDTH 100
 #define ARENA_HEIGHT 50
@@ -61,6 +62,9 @@ main()
   configureClocks();
   enableWDTInterrupts();      /* enable periodic interrupt */
   lcd_init();
+
+  p2intInit();
+
   width = lcd_getScreenWidth(), height = lcd_getScreenHeight();
   u_char width_offset = ARENA_WIDTH>>1, height_offset = ARENA_HEIGHT>>1;
   
@@ -104,7 +108,8 @@ void wdt_c_handler()
   static int count = 0;
   count ++;
   if (count == 10) {
-    count = 0;
-    update_ball();
+    count = 0;  
+    if(p2GetSw() & SW1)      /* If SW1 up, update ball */
+      update_ball();
   }
 }
