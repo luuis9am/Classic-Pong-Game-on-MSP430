@@ -1,6 +1,8 @@
 #ifndef switches_included
 #define switches_included
 
+#include "lcdtypes.h"
+
 #define SW1 BIT0			/* switch1 is p2.0 */
 #define SWITCHES SW1
 

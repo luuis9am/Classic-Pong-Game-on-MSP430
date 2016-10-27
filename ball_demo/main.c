@@ -7,6 +7,7 @@
 #define ARENA_WIDTH 100
 #define ARENA_HEIGHT 50
 #define RADIUS 14
+#define GREEN_LED BIT6
 
 u_char LOWER_BOUNDARY, UPPER_BOUNDARY, LEFT_BOUNDARY, RIGHT_BOUNDARY; /* Boundaries for arena */
 u_char width, height;       /* screen width and height */
@@ -41,9 +42,11 @@ redrawBallForever()
   int _lcol, _lrow, _pcol, _prow;;
   
   for(;;) {
-    while (!ball_moved)
+    while (!ball_moved) {
+      P1OUT &= ~GREEN_LED;      /* Green led off with CPU */
       or_sr(0x10);		/* CPU OFF */
-    
+    }
+    P1OUT |= GREEN_LED;         /* Green led on when CPU on */
     /* lock out interrupts as we update state */
     and_sr(0xfff7);		/* clear GIE (enable interrupts) */
     ball_moved = 0;		
@@ -53,7 +56,7 @@ redrawBallForever()
           
     fillCircle(_lcol, _lrow, RADIUS, chords14, COLOR_BLUE);
     fillCircle(_pcol, _prow, RADIUS, chords14, COLOR_RED);
-    lrow = _prow; lcol = _pcol;
+    lrow = _prow; lcol = _pcol; 
   }
 }
 
@@ -62,7 +65,7 @@ main()
   configureClocks();
   enableWDTInterrupts();      /* enable periodic interrupt */
   lcd_init();
-
+  P1DIR |= BIT6;
   p2intInit();
 
   width = lcd_getScreenWidth(), height = lcd_getScreenHeight();
