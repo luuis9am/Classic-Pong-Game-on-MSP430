@@ -3,8 +3,9 @@
 #include "lcddraw.h"
 #include "shape.h"
 
-Region fence = {{10,30}, {SHORT_EDGE_PIXELS-10, LONG_EDGE_PIXELS-10}};
+Region fence = {{10,30}, {screenWidth-10, screenHeight-10}};
 
+int redrawScreen;			/* true when screen needs to be redrawn */
 
 static Circle circle14;
 
@@ -81,32 +82,36 @@ layersAdvance()
     mshapeAdvance(&layers[layer], &fence);
 }
 
-drawLayers()
+void
+drawLayerLoop()
 {
   int layer, layer2, row, col;
-  for (layer = 0; layer < numLayers; layer ++) {
-    Region bounds;
-    mshapeGetBounds(&layers[layer], &bounds);
-    lcd_setArea(bounds.topLeft.axes[0], bounds.topLeft.axes[1],
-		bounds.botRight.axes[0]-1, bounds.botRight.axes[1]-1);
-    for (row = bounds.topLeft.axes[1]; row < bounds.botRight.axes[1]; row++) {
-      for (col = bounds.topLeft.axes[0]; col < bounds.botRight.axes[0]; col++) {
-	Vec2 pixelPos = {col, row};
-	u_int color = COLOR_BLUE; /* background */
-	for (layer2 = 0; layer2 < numLayers; layer2 ++) {
-	  if ((*layers[layer2].check)(layers[layer2].object, 
-				       &layers[layer2].position,
-				       &pixelPos)) {
-	    color = layers[layer2].color;
-	    break; 
-	  } /* if check */
-	} // for checking all layers at col, row
-	lcd_writeColor(color); 
-      } // for col
-    } // for row
-  } // for layer being rendered
-}	  
-    
+  for (;;) {
+    while (!redrawScreen)	/* Pause CPU if screen doesn't need updating */
+      or_sr(0x10);		/* CPU OFF */
+    for (layer = 0; layer < numLayers; layer ++) {
+      Region bounds;
+      mshapeGetBounds(&layers[layer], &bounds);
+      lcd_setArea(bounds.topLeft.axes[0], bounds.topLeft.axes[1],
+		  bounds.botRight.axes[0]-1, bounds.botRight.axes[1]-1);
+      for (row = bounds.topLeft.axes[1]; row < bounds.botRight.axes[1]; row++) {
+	for (col = bounds.topLeft.axes[0]; col < bounds.botRight.axes[0]; col++) {
+	  Vec2 pixelPos = {col, row};
+	  u_int color = COLOR_BLUE; /* background */
+	  for (layer2 = 0; layer2 < numLayers; layer2 ++) {
+	    if ((*layers[layer2].check)(layers[layer2].object, 
+					&layers[layer2].position,
+					&pixelPos)) {
+	      color = layers[layer2].color;
+	      break; 
+	    } /* if check */
+	  } // for checking all layers at col, row
+	  lcd_writeColor(color); 
+	} // for col
+      } // for row
+    } // for layer being rendered
+  }	  
+}
 
 
 
@@ -114,10 +119,23 @@ drawLayers()
 main()
 {
   configureClocks();
+  enableWDTInterrupts();      /* enable periodic interrupt */
   lcd_init();
   shapeInit();
   clearScreen(COLOR_BLUE);
   drawString5x7(20,20, "hello", COLOR_GREEN, COLOR_RED);
   makeCircle14();
-  drawLayers();
+  or_sr(0x8);			/* GIE (enable interrupts) */
+  drawLayerLoop();
+}
+
+void wdt_c_handler()
+{
+  static short count = 0;
+  count ++;
+  if (count == 25) {
+    layersAdvance();
+    redrawScreen = 1;
+    count = 0;
+  }
 }

@@ -5,10 +5,10 @@
  * Draw single pixel at x,row
  * Adapted from RobG's EduKit
  **/
-void drawPixel(u_char col, u_char row, u_int colorRGB) 
+void drawPixel(u_char col, u_char row, u_int colorBGR) 
 {
   lcd_setArea(col, row, col, row);
-  lcd_writeColor(lcd_rgbToBgr(colorRGB));
+  lcd_writeColor(colorBGR);
 }
 
 /////////////////////////
@@ -16,9 +16,8 @@ void drawPixel(u_char col, u_char row, u_int colorRGB)
 // Adapted from RobG's EduKit
 /////////////////////////
 void fillRectangle(u_char colMin, u_char rowMin, u_char width, u_char height, 
-		   u_int colorRGB)
+		   u_int colorBGR)
 {
-  u_int colorBGR = lcd_rgbToBgr(colorRGB);
   u_char colLimit = colMin + width, rowLimit = rowMin + height;
   lcd_setArea(colMin, rowMin, colLimit - 1, rowLimit - 1);
   u_int total = width * height;
@@ -31,11 +30,11 @@ void fillRectangle(u_char colMin, u_char rowMin, u_char width, u_char height,
 /**
  * Clear screen (fill with color)
  **/
-void clearScreen(u_int colorRGB) 
+void clearScreen(u_int colorBGR) 
 {
-  u_char w = lcd_getScreenWidth();
-  u_char h = lcd_getScreenHeight();
-  fillRectangle(0, 0, w, h, colorRGB);
+  u_char w = screenWidth;
+  u_char h = screenHeight;
+  fillRectangle(0, 0, screenWidth, screenHeight, colorBGR);
 }
 
 /**
@@ -46,11 +45,11 @@ void clearScreen(u_int colorRGB)
  * Adapted from RobG's EduKit
  **/
 void drawString5x7(u_char col, u_char row, char *string,
-		u_int fgColorRGB, u_int bgColorRGB)
+		u_int fgColorBGR, u_int bgColorBGR)
 {
   u_char cols = col;
   while (*string) {
-    drawChar5x7(cols, row, *string++, fgColorRGB, bgColorRGB);
+    drawChar5x7(cols, row, *string++, fgColorBGR, bgColorBGR);
     cols += 6;
   }
 }
@@ -60,16 +59,13 @@ void drawString5x7(u_char col, u_char row, char *string,
 // Adapted from RobG's EduKit
 //////////////////////////////////////////////////////
 void drawChar5x7(u_char rcol, u_char rrow, char c, 
-		 u_int fgColorRGB, u_int bgColorRGB) 
+		 u_int fgColorBGR, u_int bgColorBGR) 
 {
   u_char col = 0;
   u_char row = 0;
   u_char bit = 0x01;
   u_char oc = c - 0x20;
 
-  u_int fgColorBGR = lcd_rgbToBgr(fgColorRGB);
-  u_int bgColorBGR = lcd_rgbToBgr(bgColorRGB);
-  
   lcd_setArea(rcol, rrow, rcol + 4, rrow + 7); /* relative to requested col/row */
   while (row < 8) {
     while (col < 5) {
@@ -87,15 +83,15 @@ void drawChar5x7(u_char rcol, u_char rrow, char c,
 // Draw rectangle
 /////////////////////////////////////////////////////
 void drawRectOutline(u_char colMin, u_char rowMin, u_char width, u_char height,
-		     u_int colorRGB)
+		     u_int colorBGR)
 {
   /* top & bot */
-  fillRectangle(colMin, rowMin, width, 1, colorRGB);
-  fillRectangle(colMin, rowMin + height, width, 1, colorRGB);
+  fillRectangle(colMin, rowMin, width, 1, colorBGR);
+  fillRectangle(colMin, rowMin + height, width, 1, colorBGR);
 
   /* left & right */
-  fillRectangle(colMin, rowMin, 1, height, colorRGB);
-  fillRectangle(colMin + width, rowMin, 1, height, colorRGB);
+  fillRectangle(colMin, rowMin, 1, height, colorBGR);
+  fillRectangle(colMin + width, rowMin, 1, height, colorBGR);
 }
 
 ///////////////////////////////////////////

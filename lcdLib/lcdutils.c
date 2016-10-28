@@ -86,24 +86,7 @@ static void setUpSPIforLCD() {
 
 // Screen dimensions
 
-/**
- * Get screen dimensions
- **/
 
-u_char lcd_getScreenWidth() {
-  if (_orientation == ORIENTATION_VERTICAL
-      || _orientation == ORIENTATION_VERTICAL_ROTATED)
-    return SHORT_EDGE_PIXELS;
-  else
-    return LONG_EDGE_PIXELS;
-}
-u_char lcd_getScreenHeight() {
-  if (_orientation == ORIENTATION_VERTICAL
-      || _orientation == ORIENTATION_VERTICAL_ROTATED)
-    return LONG_EDGE_PIXELS;
-  else
-    return SHORT_EDGE_PIXELS;
-}
 
 /**
  * Write data to LCD 
@@ -180,19 +163,9 @@ void lcd_init()
   _writeCommand(COLMOD); //Set Color Format 16bit
   lcd_writeData(0x05);
   _writeCommand(DISPON); //display ON
-  lcd_setOrientation(ORIENTATION_VERTICAL_ROTATED);
-}
 
-/**
- * Change LCD's orientation
- * One of 4 possible values:
- * ORIENTATION_VERTICAL, ORIENTATION_HORIZONTAL, 
- * ORIENTATION_VERTICAL_ROTATED, ORIENTATION_HORIZONTAL_ROTATED
- **/
-void lcd_setOrientation(u_char orientation) 
-{
   _writeCommand(MADCTL);
-  switch (orientation) {
+  switch (ORIENTATION) {
   case ORIENTATION_HORIZONTAL:
     lcd_writeData(0x68);
     break;
@@ -205,34 +178,5 @@ void lcd_setOrientation(u_char orientation)
   default:
     lcd_writeData(0xC8);
   }
-  _orientation = orientation;
 }
-
-u_int lcd_rgbToBgr(u_int rgbColor)
-{
-  u_int bgrColor = rgbColor & COLOR_GREEN; /* g in same bits! */
-  bgrColor |= (rgbColor & 0xf800) >> 11; 	/* r to b */
-  bgrColor |= ((rgbColor & 0x1f) << 11);	/* b to r */
-  return bgrColor;
-}
-
-  
-
-/////////////////////////////////////
-// Colors
-/////////////////////////////////////
-const unsigned int colors[43] = { COLOR_BLACK, COLOR_WHITE, COLOR_YELLOW,
-COLOR_RED, COLOR_MAGENTA, COLOR_BLUE, COLOR_CYAN,
-COLOR_GREEN, COLOR_ORANGE, COLOR_ORANGE_RED,
-COLOR_DARK_ORANGE, COLOR_GRAY, COLOR_NAVY, COLOR_ROYAL_BLUE,
-COLOR_SKY_BLUE, COLOR_TURQUOISE, COLOR_STEEL_BLUE,
-COLOR_LIGHT_BLUE, COLOR_AQUAMARINE, COLOR_DARK_GREEN,
-COLOR_DARK_OLIVE_GREEN, COLOR_SEA_GREEN, COLOR_SPRING_GREEN,
-COLOR_PALE_GREEN, COLOR_GREEN_YELLOW, COLOR_LIME_GREEN,
-COLOR_FOREST_GREEN, COLOR_KHAKI, COLOR_GOLD,
-COLOR_GOLDENROD, COLOR_SIENNA, COLOR_BEIGE, COLOR_TAN,
-COLOR_BROWN, COLOR_CHOCOLATE, COLOR_FIREBRICK,
-COLOR_HOT_PINK, COLOR_PINK, COLOR_DEEP, COLOR_VIOLET,
-COLOR_DARK_VIOLET, COLOR_PURPLE, COLOR_MEDIUM_PURPLE };
-
 

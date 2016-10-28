@@ -61,7 +61,7 @@ main()
   configureClocks();
   enableWDTInterrupts();      /* enable periodic interrupt */
   lcd_init();
-  width = lcd_getScreenWidth(), height = lcd_getScreenHeight();
+  width = screenWidth, height = screenHeight;
   u_char width_offset = ARENA_WIDTH>>1, height_offset = ARENA_HEIGHT>>1;
   
   LOWER_BOUNDARY = (height>>1) - height_offset;

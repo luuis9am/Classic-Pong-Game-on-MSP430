@@ -6,8 +6,8 @@ void
 shapeInit()
 {
   u_char axis;
-  screenSize.axes[1] = lcd_getScreenHeight();
-  screenSize.axes[0] = lcd_getScreenWidth();
+  screenSize.axes[1] = screenHeight;
+  screenSize.axes[0] = screenWidth;
   for (axis = 0; axis < 2; axis ++) 
     screenCenter.axes[axis] = screenSize.axes[axis]/2;
 }

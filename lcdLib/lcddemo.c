@@ -19,7 +19,7 @@ main()
 {
   configureClocks();
   lcd_init();
-  u_char width = lcd_getScreenWidth(), height = lcd_getScreenHeight();
+  u_char width = screenWidth, height = screenHeight;
 
 
   clearScreen(COLOR_BLUE);

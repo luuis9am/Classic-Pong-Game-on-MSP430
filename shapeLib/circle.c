@@ -9,7 +9,7 @@ int circleCheck(Circle *circle, Vec2 *circlePos, Vec2 *pixel)
   Vec2 relPos;
   vec2Sub(&relPos, pixel, circlePos); /* vector from center to pixel */
   vec2Abs(&relPos);		      /* project to first quadrant */
-  return (relPos.axes[0] <= radius && circle->chords[relPos.axes[0]] <= relPos.axes[1]);
+  return (relPos.axes[0] <= radius && circle->chords[relPos.axes[0]] >= relPos.axes[1]);
 }
   
 void
