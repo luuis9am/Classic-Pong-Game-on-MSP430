@@ -29,25 +29,51 @@ void regionClipScreen(Region *region);
 void
 shapeInit();
 
-typedef struct {
-  Vec2 halfSize;
-} Rect;
+typedef struct AbShape_s{		/* base type for all abstrct shapes */
+  void (*getBounds)(struct AbShape_s *shape, Vec2 *centerPos, Region *bounds);
+  int (*check)(struct AbShape_s *shape, Vec2 *centerPos, Vec2 *pixelLoc);
+} AbShape;
+
+void abShapeGetBounds(AbShape *s, Vec2 *centerPos, Region *bounds);
+int abShapeCheck(AbShape *shape, Vec2 *centerPos, Vec2 *pixelLoc);
 
 
-// true if pixel is in rect centered at rectPos
-int rectCheck(Rect *rect, Vec2 *rectPos, Vec2 *pixel);
-// compute bounding box in screen coordinates for rect centered at rectPos
-void rectGetBounds(Rect *rect, Vec2 *rectPos, Region *bounds);
 
-typedef struct {
+typedef struct AbRect_s {
+  void (*getBounds)(struct AbRect_s *rect, Vec2 *centerPos, Region *bounds);
+  int (*check)(struct AbRect_s *shape, Vec2 *centerPos, Vec2 *pixel);
+  Vec2 halfSize;	/* vector from center to upper-right corner */
+} AbRect;
+
+
+// true if pixel is in rect centered at centerPos
+int abRectCheck(AbRect *rect, Vec2 *centerPos, Vec2 *pixel);
+// compute bounding box in screen coordinates for rect centered at centerPos
+void abRectGetBounds(AbRect *rect, Vec2 *centerPos, Region *bounds);
+
+typedef struct AbCircle_s {
+  void (*getBounds)(struct AbCircle_s *circle, Vec2 *centerPos, Region *bounds);
+  int (*check)(struct AbCircle_s *circle, Vec2 *centerPos, Vec2 *pixel);
   u_char *chords;
   u_char radius;
-} Circle;
+} AbCircle;
 
 // true if pixel is in circle centered at circlePos
-int circleCheck(Circle *circle, Vec2 *circlePos, Vec2 *pixel);
+int abCircleCheck(AbCircle *circle, Vec2 *circlePos, Vec2 *pixel);
 // compute bounding box in screen coordinates for circle centered at circlePos
-void circleGetBounds(Circle *circle, Vec2 *circlePos, Region *bounds);
+void abCircleGetBounds(AbCircle *circle, Vec2 *circlePos, Region *bounds);
 
+/* Layer: contains a shape to be displayed */
+typedef struct Layer_s {
+  AbShape *abShape;
+  Vec2 pos, dispPos;
+  u_int color;
+  struct Layer_s *next;
+} Layer;	
+
+void layerGetBounds(Layer *l, Region *bounds);
+void drawLayers(Layer *layers);
+
+extern u_int bgColor;		/*  background color */
 
 #endif

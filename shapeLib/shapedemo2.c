@@ -3,10 +3,7 @@
 #include "lcddraw.h"
 #include "shape.h"
 
-Region fence = {{10,30}, {SHORT_EDGE_PIXELS-10, LONG_EDGE_PIXELS-10}};
-
-
-static Circle circle14;
+static AbCircle circle14;
 
 void makeCircle14()
 {
@@ -14,110 +11,74 @@ void makeCircle14()
   computeChordVec(chords14, 14);
   circle14.radius = 14;
   circle14.chords = chords14;
+  circle14.check = abCircleCheck;
+  circle14.getBounds = abCircleGetBounds;
 }  
-Rect rect10 = {10,15};;
 
-typedef struct {
-  Vec2 position, prevPosition;
-  Vec2 velocity;
-  u_int color;
-  void *object;
-  void (*getBounds)(void *shape, Vec2 *shapePos, Region *bounds);
-  int (*check)(void *shape, Vec2 *shapePos, Vec2 *pixel);
-} MovingShape;
+AbRect rect10 = {abRectGetBounds, abRectCheck, 10,10};;
 
-mshapeAdvance(MovingShape *ms, Region *fence)
+abDrawPos(AbShape *shape, Vec2 *shapeCenter, u_int fg_color, u_int bg_color)
 {
-  Vec2 newPos;
-  u_char axis;
-  Region shapeBoundary;
-  vec2Add(&newPos, &ms->position, &ms->velocity);
-  (*ms->getBounds)(ms->object, &newPos, &shapeBoundary);
-  for (axis = 0; axis < 2; axis ++) {
-    if ((shapeBoundary.topLeft.axes[axis] < fence->topLeft.axes[axis]) ||
-	(shapeBoundary.botRight.axes[axis] > fence->botRight.axes[axis]) ) {
-      int velocity = ms->velocity.axes[axis] = -ms->velocity.axes[axis];
-      newPos.axes[axis] += (2*velocity);
+  u_char row, col;
+  Region bounds;
+  abShapeGetBounds(shape, shapeCenter, &bounds);
+  lcd_setArea(bounds.topLeft.axes[0], bounds.topLeft.axes[1],
+	      bounds.botRight.axes[0]-1, bounds.botRight.axes[1]-1);
+  for (row = bounds.topLeft.axes[1]; row < bounds.botRight.axes[1]; row++) {
+    for (col = bounds.topLeft.axes[0]; col < bounds.botRight.axes[0]; col++) {
+      Vec2 pixelPos = {col, row};
+      int color = abShapeCheck(shape, shapeCenter, &pixelPos) ?
+	fg_color : bg_color;
+      lcd_writeColor(color);
     }
   }
 }
 
-mshapeGetBounds(MovingShape *ms, Region *bounds)
-{
-  Region prevBounds, curBounds;
-   (*ms->getBounds)(ms->object, &ms->position, &curBounds);
-   (*ms->getBounds)(ms->object, &ms->prevPosition, &prevBounds);
-   regionUnion(bounds, &curBounds, &prevBounds);
-   *bounds = fence;
-   regionClipScreen(bounds);
-}
+
+
+
+Region fence = {{10,30}, {SHORT_EDGE_PIXELS-10, LONG_EDGE_PIXELS-10}};
+
+
 
 #define numLayers 2
-MovingShape layers[] = {
-  {
-    {50,50}, {55,55},	/* position */
-    {1,2},			/* velocity */
-    COLOR_RED,
-    &rect10,
-    (void *)rectGetBounds,
-    (void *)rectCheck
-  },
-  {
-    {100,101}, {101,101},	/* position */
-    {1,2},			/* velocity */
-    COLOR_ORANGE,
-    &circle14,
-    (void *)circleGetBounds,
-    (void *)circleCheck
-  }, 
+Layer layer1 = {
+  (AbShape *)&rect10,
+  {screenWidth/2, screenHeight/2},{screenWidth/2, screenHeight/2}, /* position */
+  COLOR_RED,
+  0,
+};
+Layer layer0 = {
+  (AbShape *)&circle14,
+  {(screenWidth/2)+10, (screenHeight/2)+5}, /* position */
+  {(screenWidth/2)+10, (screenHeight/2)+5}, 
+  COLOR_ORANGE,
+  &layer1,
 };
 
 
-void
-layersAdvance()
-{
-  int layer;
-  for (layer = 0; layer < numLayers; layer ++)
-    mshapeAdvance(&layers[layer], &fence);
-}
-
-drawLayers()
-{
-  int layer, layer2, row, col;
-  for (layer = 0; layer < numLayers; layer ++) {
-    Region bounds;
-    mshapeGetBounds(&layers[layer], &bounds);
-    lcd_setArea(bounds.topLeft.axes[0], bounds.topLeft.axes[1],
-		bounds.botRight.axes[0]-1, bounds.botRight.axes[1]-1);
-    for (row = bounds.topLeft.axes[1]; row < bounds.botRight.axes[1]; row++) {
-      for (col = bounds.topLeft.axes[0]; col < bounds.botRight.axes[0]; col++) {
-	Vec2 pixelPos = {col, row};
-	u_int color = COLOR_BLUE; /* background */
-	for (layer2 = 0; layer2 < numLayers; layer2 ++) {
-	  if ((*layers[layer2].check)(layers[layer2].object, 
-				       &layers[layer2].position,
-				       &pixelPos)) {
-	    color = layers[layer2].color;
-	    break; 
-	  } /* if check */
-	} // for checking all layers at col, row
-	lcd_writeColor(color); 
-      } // for col
-    } // for row
-  } // for layer being rendered
-}	  
     
 
-
-
+u_int bgColor = COLOR_BLUE;
 
 main()
 {
   configureClocks();
   lcd_init();
   shapeInit();
+  Vec2 rectPos = screenCenter, circlePos = {30,screenHeight - 30};
+
   clearScreen(COLOR_BLUE);
   drawString5x7(20,20, "hello", COLOR_GREEN, COLOR_RED);
+  shapeInit();
+  
   makeCircle14();
-  drawLayers();
+  drawLayers(&layer0);
+  
+  //  abDrawPos((AbShape*)&circle14, &rectPos, COLOR_ORANGE, COLOR_BLUE);
+  //  abDrawPos((AbShape*)&rect10, &circlePos, COLOR_RED, COLOR_BLUE);
+  //  drawCircle();
+  //  drawRect();
 }
+
+

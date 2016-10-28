@@ -12,3 +12,15 @@ shapeInit()
     screenCenter.axes[axis] = screenSize.axes[axis]/2;
 }
 
+void 
+abShapeGetBounds(AbShape *s, Vec2 *centerPos, Region *bounds)
+{
+  (*s->getBounds)(s, centerPos, bounds);
+}
+
+int
+abShapeCheck(AbShape *s, Vec2 *centerPos, Vec2 *pixelLoc)
+{
+  (*s->check)(s, centerPos, pixelLoc);
+}
+
