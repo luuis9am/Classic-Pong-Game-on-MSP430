@@ -1,8 +1,9 @@
 #include <msp430.h>
 #include <libTimer.h>
-#include "lcdutils.h"
-#include "lcddraw.h"
-#include "shape.h"
+#include <lcdutils.h>
+#include <lcddraw.h>
+#include <p2switches.h>
+#include <shape.h>
 
 #define GREEN_LED BIT6
 
@@ -73,6 +74,7 @@ main()
   configureClocks();
   lcd_init();
   shapeInit();
+  p2sw_init(1);
   Vec2 rectPos = screenCenter, circlePos = {30,screenHeight - 30};
 
   clearScreen(COLOR_BLUE);
@@ -105,7 +107,8 @@ void wdt_c_handler()
   count ++;
   if (count == 15) {
     msAdvance(&ms0, &fence);
-    redrawScreen = 1;
+    if (p2sw_read())
+      redrawScreen = 1;
     count = 0;
   }
   P1OUT &= ~GREEN_LED;		/* Green LED off when cpu off */

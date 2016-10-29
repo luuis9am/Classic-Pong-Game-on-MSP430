@@ -6,14 +6,11 @@ CFLAGS          	= -mmcu=${CPU} -Os -I../h -I../h
 CC              = msp430-elf-gcc
 AS              = msp430-elf-gcc -mmcu=${CPU} -c
 
-#common components
-COMMON_OBJECTS	= switches.o ../lib/libTimer.a ../lib/libLcd.a wdt_handler.o interrupt_handler.o
-
 all: main.elf
 
 #additional rules for files
-main.elf: main.o ${COMMON_OBJECTS} 
-	${CC} -mmcu=${CPU} -o $@ $^
+main.elf: main.o wdt_handler.o
+	${CC} -mmcu=${CPU} -o $@ $^ -L../lib -lTimer -lLcd -lp2sw
 
 load: main.elf
 	mspdebug rf2500 "prog $^"
