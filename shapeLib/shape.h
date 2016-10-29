@@ -37,6 +37,18 @@ void abShapeGetBounds(AbShape *s, Vec2 *centerPos, Region *bounds);
 int abShapeCheck(AbShape *shape, Vec2 *centerPos, Vec2 *pixelLoc);
 
 
+typedef struct AbRArrow_s {
+  void (*getBounds)(struct AbRArrow_s *shape, Vec2 *centerPos, Region *bounds);
+  int (*check)(struct AbRArrow_s *shape, Vec2 *centerPos, Vec2 *pixelLoc);
+  int size;
+} AbRArrow;
+
+// true if pixel is in arrow whose tip is at centerPos
+int abRArrowCheck(AbRArrow *arrow, Vec2 *centerPos, Vec2 *pixel);
+// compute bounding box in screen coordinates for arrow with whose tip is at centerPos
+void abRArrowGetBounds(AbRArrow *arrow, Vec2 *centerPos, Region *bounds);
+
+
 
 typedef struct AbRect_s {
   void (*getBounds)(struct AbRect_s *rect, Vec2 *centerPos, Region *bounds);
