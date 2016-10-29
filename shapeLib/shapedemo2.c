@@ -53,7 +53,7 @@ main()
   shapeInit();
   
   makeCircle14();
-  drawLayers(&layer0);
+  layerDraw(&layer0);
   
   //  abDrawPos((AbShape*)&circle14, &rectPos, COLOR_ORANGE, COLOR_BLUE);
   //  abDrawPos((AbShape*)&rect10, &circlePos, COLOR_RED, COLOR_BLUE);

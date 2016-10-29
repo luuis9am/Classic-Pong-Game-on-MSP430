@@ -1,4 +1,3 @@
-
 #ifndef shape_included
 #define shape_included
 
@@ -70,9 +69,8 @@ typedef struct Layer_s {
   u_int color;
   struct Layer_s *next;
 } Layer;	
-
 void layerGetBounds(Layer *l, Region *bounds);
-void drawLayers(Layer *layers);
+void layerDraw(Layer *layers);
 
 extern u_int bgColor;		/*  background color */
 

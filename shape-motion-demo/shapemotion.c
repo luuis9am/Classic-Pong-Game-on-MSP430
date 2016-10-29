@@ -1,13 +1,12 @@
+#include <msp430.h>
 #include <libTimer.h>
 #include "lcdutils.h"
 #include "lcddraw.h"
 #include "shape.h"
 
-Region fence = {{10,30}, {screenWidth-10, screenHeight-10}};
+#define GREEN_LED BIT6
 
-int redrawScreen;			/* true when screen needs to be redrawn */
-
-static Circle circle14;
+static AbCircle circle14;
 
 void makeCircle14()
 {
@@ -15,127 +14,99 @@ void makeCircle14()
   computeChordVec(chords14, 14);
   circle14.radius = 14;
   circle14.chords = chords14;
+  circle14.check = abCircleCheck;
+  circle14.getBounds = abCircleGetBounds;
 }  
-Rect rect10 = {10,15};;
 
-typedef struct {
-  Vec2 position, prevPosition;
+AbRect rect10 = {abRectGetBounds, abRectCheck, 10,10};;
+
+#define numLayers 2
+Layer layer1 = {
+  (AbShape *)&rect10,
+  {screenWidth/2, screenHeight/2},{screenWidth/2, screenHeight/2}, /* position */
+  COLOR_RED,
+  0,
+};
+Layer layer0 = {
+  (AbShape *)&circle14,
+  {(screenWidth/2)+10, (screenHeight/2)+5}, /* position */
+  {(screenWidth/2)+10, (screenHeight/2)+5}, 
+  COLOR_ORANGE,
+  &layer1,
+};
+
+typedef struct MovShape_s {
+  Layer *layer;
   Vec2 velocity;
-  u_int color;
-  void *object;
-  void (*getBounds)(void *shape, Vec2 *shapePos, Region *bounds);
-  int (*check)(void *shape, Vec2 *shapePos, Vec2 *pixel);
-} MovingShape;
+  struct MovShape_s *next;
+} MovShape;
 
-mshapeAdvance(MovingShape *ms, Region *fence)
+MovShape ms1 = { &layer1, {1,2}, 0 };
+MovShape ms0 = { &layer0, {2,1}, &ms1 };
+Region fence = {{10,30}, {SHORT_EDGE_PIXELS-10, LONG_EDGE_PIXELS-10}};
+
+msAdvance(MovShape *ms, Region *fence)
 {
   Vec2 newPos;
   u_char axis;
   Region shapeBoundary;
-  vec2Add(&newPos, &ms->position, &ms->velocity);
-  (*ms->getBounds)(ms->object, &newPos, &shapeBoundary);
-  for (axis = 0; axis < 2; axis ++) {
-    if ((shapeBoundary.topLeft.axes[axis] < fence->topLeft.axes[axis]) ||
-	(shapeBoundary.botRight.axes[axis] > fence->botRight.axes[axis]) ) {
-      int velocity = ms->velocity.axes[axis] = -ms->velocity.axes[axis];
-      newPos.axes[axis] += (2*velocity);
-    }
-  }
-}
-
-mshapeGetBounds(MovingShape *ms, Region *bounds)
-{
-  Region prevBounds, curBounds;
-   (*ms->getBounds)(ms->object, &ms->position, &curBounds);
-   (*ms->getBounds)(ms->object, &ms->prevPosition, &prevBounds);
-   regionUnion(bounds, &curBounds, &prevBounds);
-   *bounds = fence;
-   regionClipScreen(bounds);
-}
-
-#define numLayers 2
-MovingShape layers[] = {
-  {
-    {50,50}, {55,55},	/* position */
-    {1,2},			/* velocity */
-    COLOR_RED,
-    &rect10,
-    (void *)rectGetBounds,
-    (void *)rectCheck
-  },
-  {
-    {100,101}, {101,101},	/* position */
-    {1,2},			/* velocity */
-    COLOR_ORANGE,
-    &circle14,
-    (void *)circleGetBounds,
-    (void *)circleCheck
-  }, 
-};
-
-
-void
-layersAdvance()
-{
-  int layer;
-  for (layer = 0; layer < numLayers; layer ++)
-    mshapeAdvance(&layers[layer], &fence);
-}
-
-void
-drawLayerLoop()
-{
-  int layer, layer2, row, col;
-  for (;;) {
-    while (!redrawScreen)	/* Pause CPU if screen doesn't need updating */
-      or_sr(0x10);		/* CPU OFF */
-    for (layer = 0; layer < numLayers; layer ++) {
-      Region bounds;
-      mshapeGetBounds(&layers[layer], &bounds);
-      lcd_setArea(bounds.topLeft.axes[0], bounds.topLeft.axes[1],
-		  bounds.botRight.axes[0]-1, bounds.botRight.axes[1]-1);
-      for (row = bounds.topLeft.axes[1]; row < bounds.botRight.axes[1]; row++) {
-	for (col = bounds.topLeft.axes[0]; col < bounds.botRight.axes[0]; col++) {
-	  Vec2 pixelPos = {col, row};
-	  u_int color = COLOR_BLUE; /* background */
-	  for (layer2 = 0; layer2 < numLayers; layer2 ++) {
-	    if ((*layers[layer2].check)(layers[layer2].object, 
-					&layers[layer2].position,
-					&pixelPos)) {
-	      color = layers[layer2].color;
-	      break; 
-	    } /* if check */
-	  } // for checking all layers at col, row
-	  lcd_writeColor(color); 
-	} // for col
-      } // for row
-    } // for layer being rendered
-  }	  
+  for (; ms; ms = ms->next) {
+    vec2Add(&newPos, &ms->layer->pos, &ms->velocity);
+    abShapeGetBounds(ms->layer->abShape, &ms->layer->pos, &shapeBoundary);
+    for (axis = 0; axis < 2; axis ++) {
+      if ((shapeBoundary.topLeft.axes[axis] < fence->topLeft.axes[axis]) ||
+	  (shapeBoundary.botRight.axes[axis] > fence->botRight.axes[axis]) ) {
+	int velocity = ms->velocity.axes[axis] = -ms->velocity.axes[axis];
+	newPos.axes[axis] += (2*velocity);
+      }	// if outside of fence 
+    } // for axis
+    ms->layer->pos = newPos;
+  } // for ms
 }
 
 
-
+u_int bgColor = COLOR_BLUE;
+int redrawScreen = 1;
 
 main()
 {
   configureClocks();
-  enableWDTInterrupts();      /* enable periodic interrupt */
   lcd_init();
   shapeInit();
+  Vec2 rectPos = screenCenter, circlePos = {30,screenHeight - 30};
+
   clearScreen(COLOR_BLUE);
-  drawString5x7(20,20, "hello", COLOR_GREEN, COLOR_RED);
+  drawString5x7(20,20, "hello", COLOR_GREEN, COLOR_BLUE);
+  shapeInit();
+  
   makeCircle14();
+
+  enableWDTInterrupts();      /* enable periodic interrupt */
   or_sr(0x8);			/* GIE (enable interrupts) */
-  drawLayerLoop();
+
+
+  P1DIR |= GREEN_LED;		
+  for(;;) {
+    while (!redrawScreen) {	/* Pause CPU if screen doesn't need updating */
+      P1OUT &= ~GREEN_LED;      /* Green led off with CPU */
+      or_sr(0x10);		/* CPU OFF */
+    }
+    P1OUT |= GREEN_LED;         /* Green led on when CPU on */
+    redrawScreen = 0;
+    layerDraw(&layer0);
+  }
 }
+
 
 void wdt_c_handler()
 {
   static short count = 0;
+  P1OUT |= GREEN_LED;		/* Green LED on when cpu on */
   count ++;
   if (count == 25) {
-    layersAdvance();
+    msAdvance(&ms0, &fence);
     redrawScreen = 1;
     count = 0;
   }
+  P1OUT &= ~GREEN_LED;		/* Green LED off when cpu off */
 }

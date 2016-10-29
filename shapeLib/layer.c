@@ -13,7 +13,7 @@ layerGetBounds(Layer *l, Region *bounds)
 }
 
 void
-drawLayers(Layer *layers)
+layerDraw(Layer *layers)
 {
   int row, col;
   Layer *boundLayer, *probeLayer;
@@ -21,9 +21,9 @@ drawLayers(Layer *layers)
     Region bounds;
     layerGetBounds(boundLayer, &bounds);
     lcd_setArea(bounds.topLeft.axes[0], bounds.topLeft.axes[1],
-		bounds.botRight.axes[0]-1, bounds.botRight.axes[1]-1);
-    for (row = bounds.topLeft.axes[1]; row < bounds.botRight.axes[1]; row++) {
-      for (col = bounds.topLeft.axes[0]; col < bounds.botRight.axes[0]; col++) {
+		bounds.botRight.axes[0], bounds.botRight.axes[1]);
+    for (row = bounds.topLeft.axes[1]; row <= bounds.botRight.axes[1]; row++) {
+      for (col = bounds.topLeft.axes[0]; col <= bounds.botRight.axes[0]; col++) {
 	Vec2 pixelPos = {col, row};
 	u_int color = bgColor;
 	for (probeLayer = layers; probeLayer; probeLayer = probeLayer->next) {
@@ -36,4 +36,6 @@ drawLayers(Layer *layers)
       } // for col
     } // for row
   } // for layer being rendered
+  for (boundLayer=layers; boundLayer; boundLayer=boundLayer->next)
+    boundLayer->dispPos = boundLayer->pos;
 }	  

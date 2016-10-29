@@ -9,4 +9,5 @@ clean:
 	(cd lcdLib; make clean)
 	(cd shapeLib; make clean)
 	(cd ball_demo; make clean)
+	(cd shape-motion-demo; make clean)
 	rm -rf lib h
