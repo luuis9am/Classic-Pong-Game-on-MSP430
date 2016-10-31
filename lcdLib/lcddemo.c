@@ -1,9 +1,21 @@
+/** \file lcddemo.c
+ *  \brief A simple demo that draws a string and circle
+ */
+
 #include <libTimer.h>
 #include "lcdutils.h"
 #include "lcddraw.h"
 
 static u_char chords14[15];	/* for a circle of radius 14 */
 
+/** Draws a filled circle
+ * 
+ *  \param col Column to center circle at
+ *  \param row Row to center circle at
+ *  \param radius Radius of circle
+ *  \param chords Vector to draw circle
+ *  \param color Color of the circle
+ */
 fillCircle(u_char col, u_char row, u_char radius, u_char chords[], u_int color)
 {
   u_char drow;
@@ -15,6 +27,7 @@ fillCircle(u_char col, u_char row, u_char radius, u_char chords[], u_int color)
   }
 }
 
+/** Initializes everything, clears the screen, draws "hello" and the circle */
 main()
 {
   configureClocks();
