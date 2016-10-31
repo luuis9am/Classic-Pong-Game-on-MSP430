@@ -1,20 +1,30 @@
+/** \file lcddraw.c
+ *  \brief Adapted from RobG's EduKit
+ */
 #include "lcdutils.h"
 #include "lcddraw.h"
 
-/**
- * Draw single pixel at x,row
- * Adapted from RobG's EduKit
- **/
+
+/** Draw single pixel at x,row 
+ *
+ *  \param col Column to draw to
+ *  \param row Row to draw to
+ *  \param colorBGR Color of pixel in BGR
+ */
 void drawPixel(u_char col, u_char row, u_int colorBGR) 
 {
   lcd_setArea(col, row, col, row);
   lcd_writeColor(colorBGR);
 }
 
-/////////////////////////
-// Fill rectangle
-// Adapted from RobG's EduKit
-/////////////////////////
+/** Fill rectangle
+ *
+ *  \param colMin Column start
+ *  \param rowMin Row start
+ *  \param width Width of rectangle
+ *  \param height height of rectangle
+ *  \param colorBGR Color of rectangle in BGR
+ */
 void fillRectangle(u_char colMin, u_char rowMin, u_char width, u_char height, 
 		   u_int colorBGR)
 {
@@ -27,9 +37,10 @@ void fillRectangle(u_char colMin, u_char rowMin, u_char width, u_char height,
   }
 }
 
-/**
- * Clear screen (fill with color)
- **/
+/** Clear screen (fill with color)
+ *  
+ *  \param colorBGR The color to fill screen
+ */
 void clearScreen(u_int colorBGR) 
 {
   u_char w = screenWidth;
@@ -37,36 +48,18 @@ void clearScreen(u_int colorBGR)
   fillRectangle(0, 0, screenWidth, screenHeight, colorBGR);
 }
 
-/**
- * Draw string at col,row
- * Type:
- * FONT_SM - small (5x8,) FONT_MD - medium (8x12,) FONT_LG - large (11x16)
- * FONT_SM_BKG, FONT_MD_BKG, FONT_LG_BKG - as above, but with background color
- * Adapted from RobG's EduKit
- **/
-void drawString5x7(u_char col, u_char row, char *string,
-		u_int fgColorBGR, u_int bgColorBGR)
-{
-  u_char cols = col;
-  while (*string) {
-    drawChar5x7(cols, row, *string++, fgColorBGR, bgColorBGR);
-    cols += 6;
-  }
-}
-
-//////////////////////////////////////////////////////
-// 5x7 font - this function draws background pixels
-// Adapted from RobG's EduKit
-//////////////////////////////////////////////////////
+/** 5x7 font - this function draws background pixels
+ *  Adapted from RobG's EduKit
+ */
 void drawChar5x7(u_char rcol, u_char rrow, char c, 
-		 u_int fgColorBGR, u_int bgColorBGR) 
+     u_int fgColorBGR, u_int bgColorBGR) 
 {
   u_char col = 0;
   u_char row = 0;
   u_char bit = 0x01;
   u_char oc = c - 0x20;
 
-  lcd_setArea(rcol, rrow, rcol + 4, rrow + 7); /* relative to requested col/row */
+  lcd_setArea(rcol, rrow, rcol + 4, rrow + 7); /**< relative to requested col/row */
   while (row < 8) {
     while (col < 5) {
       u_int colorBGR = (font_5x7[oc][col] & bit) ? fgColorBGR : bgColorBGR;
@@ -79,53 +72,82 @@ void drawChar5x7(u_char rcol, u_char rrow, char c,
   }
 }
 
-/////////////////////////////////////////////////////
-// Draw rectangle
-/////////////////////////////////////////////////////
+/** Draw string at col,row
+ *  Type:
+ *  FONT_SM - small (5x8,) FONT_MD - medium (8x12,) FONT_LG - large (11x16)
+ *  FONT_SM_BKG, FONT_MD_BKG, FONT_LG_BKG - as above, but with background color
+ *  Adapted from RobG's EduKit
+ *
+ *  \param col Column to start drawing string
+ *  \param row Row to start drawing string
+ *  \param string The string
+ *  \param fgColorBGR Foreground color in BGR
+ *  \param bgColorBGR Background color in BGR
+ */
+void drawString5x7(u_char col, u_char row, char *string,
+		u_int fgColorBGR, u_int bgColorBGR)
+{
+  u_char cols = col;
+  while (*string) {
+    drawChar5x7(cols, row, *string++, fgColorBGR, bgColorBGR);
+    cols += 6;
+  }
+}
+
+
+/** Draw rectangle outline
+ *  
+ *  \param colMin Column start
+ *  \param rowMin Row start 
+ *  \param width Width of rectangle
+ *  \param height Height of rectangle
+ *  \param colorBGR Color of rectangle in BGR
+ */
 void drawRectOutline(u_char colMin, u_char rowMin, u_char width, u_char height,
 		     u_int colorBGR)
 {
-  /* top & bot */
+  /**< top & bot */
   fillRectangle(colMin, rowMin, width, 1, colorBGR);
   fillRectangle(colMin, rowMin + height, width, 1, colorBGR);
 
-  /* left & right */
+  /**< left & right */
   fillRectangle(colMin, rowMin, 1, height, colorBGR);
   fillRectangle(colMin + width, rowMin, 1, height, colorBGR);
 }
 
-///////////////////////////////////////////
-// build table chordVec[d] of circle 1/2 widths at distances d from center
-// Code adapted from RobG's EduKit
-// Uses Bresenham's circle algorithm
-///////////////////////////////////////////
+/** Builds table chordVec[d] of circle 1/2 widths at distances d from center
+ *  Code adapted from RobG's EduKit
+ *  Uses Bresenham's circle algorithm
+ *  
+ *  \param chordVec (out) Chord vector computed
+ *  \param radius Radius of circle
+ */
 void computeChordVec(u_char chordVec[], u_char radius) 
 {
   int col = radius, row = 0;	/* first coordinate (radius, 0) */
 
-  // key insight: (col+1)**2 - col**2 = 2col+1
+  /**< key insight: (col+1)**2 - col**2 = 2col+1 */
 
-  int dColSquared = 2 * col - 1;  // change in col**2 for a unit decrease in col
-  int dRowSquared = 1;	    // change in row**2 for a unit increase in row
+  int dColSquared = 2 * col - 1;  /**< change in col**2 for a unit decrease in col */
+  int dRowSquared = 1;	    /**< change in row**2 for a unit increase in row */
 
-  int radiusSqErr = 0;		/* (radius, 0) is on the circle  */
-  int colPrev = 0;		/* initially bogus value  to force first entry*/
-  while (col >= row) {		/* only sweep first octant */
-    chordVec[row] = col;      /* row always changes in first octant */
+  int radiusSqErr = 0;		/**< (radius, 0) is on the circle  */
+  int colPrev = 0;		/**< initially bogus value  to force first entry */
+  while (col >= row) {		/**< only sweep first octant */
+    chordVec[row] = col;      /**< row always changes in first octant */
 
-    /* mirror into 2nd octant */
-    if (colPrev != col)		/* col sometimes repeats in first octant */
-      chordVec[col] = row;	/* only save first (max) col for row */
+    /**< mirror into 2nd octant */
+    if (colPrev != col)		/**< col sometimes repeats in first octant */
+      chordVec[col] = row;	/**< only save first (max) col for row */
     colPrev = col;
 
-    row++;			/* move vertically (slope <= -1 for first octant) */
-    radiusSqErr += dRowSquared;	/* current radiusSqErr */
-    dRowSquared += 2; 		/* next dRowSquared */
-    if ((2 * radiusSqErr) > dColSquared) { /* only update col if error reduced */
-      col--;			/* move horizontally */
-      radiusSqErr -= dColSquared;	/* current radiusSqErr */
-      dColSquared -= 2;	      /* next dColSquared */
+    row++;			/**< move vertically (slope <= -1 for first octant) */
+    radiusSqErr += dRowSquared;	/**< current radiusSqErr */
+    dRowSquared += 2; 		/**< next dRowSquared */
+    if ((2 * radiusSqErr) > dColSquared) { /**< only update col if error reduced */
+      col--;			/**< move horizontally */
+      radiusSqErr -= dColSquared;	/**< current radiusSqErr */
+      dColSquared -= 2;	      /**< next dColSquared */
     }
   }
 }
-
