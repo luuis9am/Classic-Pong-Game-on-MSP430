@@ -1,15 +1,13 @@
 #include "shape.h"
 
-Vec2 screenSize, screenCenter, vec2Unit = {1,1}, vec2Zero = {0,0};;
+Vec2 screenSize = {screenWidth, screenHeight};
+Vec2 screenCenter= {screenWidth/2, screenHeight/2};
+Vec2 vec2Unit = {1,1}, vec2Zero = {0,0};;
 
 void
 shapeInit()
 {
-  u_char axis;
-  screenSize.axes[1] = screenHeight;
-  screenSize.axes[0] = screenWidth;
-  for (axis = 0; axis < 2; axis ++) 
-    screenCenter.axes[axis] = screenSize.axes[axis]/2;
+  /* no longer needed */
 }
 
 void 

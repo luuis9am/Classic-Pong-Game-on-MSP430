@@ -7,10 +7,9 @@
 
 #include "lcdutils.h"
 
-/** Vector structure containing:
- *  an array of two integers that can be used
- *  to describe a position (x,y), or dimensions
- *  such as length and width.
+/** Vec2 contain a position or vector
+ *
+ *  Axes: 0 for col, 1 for row.
  */
 typedef struct {
   int axes[2];
@@ -18,15 +17,15 @@ typedef struct {
 
 extern Vec2 screenSize, screenCenter, vec2Unit, vec2Zero;
 
-/** Gives the max vector between v1 and v2
+/** vec2Max computes the maximum in both dimensions.
  *  
- *  \param vecMax (out) The max vector
+ *  \param vecMax (out) 
  *  \param (in) v1 Vector 1
  *  \param (in) v2 Vector 2
  */ 
 void vec2Max(Vec2 *vecMax, Vec2 *v1, Vec2 *v2);
 
-/** Gives the min vector between v1 and v2
+/** vec2Min computes the minimum in both dimensions
  *  
  *  \param vecMin (out) The min vector
  *  \param v1 (in) Vector 1
@@ -34,48 +33,33 @@ void vec2Max(Vec2 *vecMax, Vec2 *v1, Vec2 *v2);
  */ 
 void vec2Min(Vec2 *vecMin, Vec2 *v1, Vec2 *v2);
 
-/** Gives the summed vector of v1 and v2 (v1 + v2)
+/** Vector sum: result = v1 + v2
  *  
- *  \param result (out) The resulting vector of v1 + v2
- *  \param v1 (in) Vector 1
- *  \param v2 (in) Vector 2
  */ 
 void vec2Add(Vec2 *result, Vec2 *a1, Vec2 *a2);
 
-/** Gives the subtracted vector between v1 and v2 (v1 - v2)
+/** Vector difference: result = v1 - v2
  *  
- *  \param result (out) The resulting vector of v1 - v2
- *  \param v1 (in) Vector 1
- *  \param v2 (in) Vector 2
  */ 
 void vec2Sub(Vec2 *result, Vec2 *a1, Vec2 *a2);
 
-/** Gives the absolute value of vector
+/** Absolute value in each direction
  *  
  *  \param vec (in and out) The vector
  */ 
 void vec2Abs(Vec2 *vec);
 
-/** Region structure that contains:
- *  an array of two integers that 
- *  represent the top left and
- *  bottom right coordinates of the region
+/** Specifies a rectangular region
  */
 typedef struct {
   Vec2 topLeft, botRight;	/* in screen coordinates */
 } Region;		
 
-/** This function computes the union of two regions
- *  
- *  \param rUnion (out) The unioned region of r1 and r2
- *  \param r1 (in) The first region
- *  \param r2 (in) The second region
+/** Computes the bounding box containing two regions.
  */
 void regionUnion(Region *rUnion, Region *r1, Region *r2);
 
-/** Trims extend of region to screen bounds 
- *  
- *  \param region (in and out) The region
+/** Clip region within screen bounds
  */
 void regionClipScreen(Region *region);
 
@@ -84,9 +68,16 @@ void regionClipScreen(Region *region);
  */
 void shapeInit();
 
-/** Trims extend of region to screen bounds 
+/** Effectively a base class for Abstract Shapes
  *  
- *  \param region The region
+ *  Abstract Shapes have a shape but no position or color.
+ *  The first two fields MUST BE pointers to
+ *
+ *  getBounds: A function that computes the bounding box for the AbShape
+ *  when rendered at coordinate centerPos
+ * 
+ *  check: A function that determines if the AbShape contains pixelLoc when 
+ *  rendered at centerPos
  */
 typedef struct AbShape_s{		/* base type for all abstrct shapes */
   void (*getBounds)(struct AbShape_s *shape, Vec2 *centerPos, Region *bounds);
@@ -110,10 +101,10 @@ void abShapeGetBounds(AbShape *s, Vec2 *centerPos, Region *bounds);
  */
 int abShapeCheck(AbShape *shape, Vec2 *centerPos, Vec2 *pixelLoc);
 
-/** Abstract Arrow structure that contains:
- *  a pointer to a getBounds() function,
- *  a pointer to a check() function, and
- *  a size
+/** An AbShape Right Arrow with filled tip
+ *
+ *  size: width of the arrow.  Tip is a triangle with width=1/2 size.
+ *  The "centerPos is at the arrow's tip.
  */
 typedef struct AbRArrow_s {
   void (*getBounds)(struct AbRArrow_s *shape, Vec2 *centerPos, Region *bounds);
@@ -121,28 +112,18 @@ typedef struct AbRArrow_s {
   int size;
 } AbRArrow;
 
-/** Computes bounding box in screen coordinates for arrow with 
- *  whose tip is at centerPos
- *  
- *  \param arrow (in) The abstract arrow
- *  \param centerPos (in) The Vec2 specifying the center position of the arrow
- *  \param bounds (out) The computed bounded box region
+/** As required by AbShape
  */
 void abRArrowGetBounds(AbRArrow *arrow, Vec2 *centerPos, Region *bounds);
 
-/** Check if pixel is within the abArrow centered at centerPos
- *
- *  \param arrow (in) The abstract arrow
- *  \param centerPos (in) The Vec2 specifying the center position of the arrow
- *  \param pixel (in) The Vec2 specifying the location of the pixel
- *  \return True (1) if pixel is in arrow whose tip is at centerPos
+/** As required by AbShape
  */
 int abRArrowCheck(AbRArrow *arrow, Vec2 *centerPos, Vec2 *pixel);
 
-/** Abstract Rectangle structure that contains:
- *  a pointer a getBounds() function,
- *  a pointer to a check() function, and
- *  a half size vector from the center to upper-right corner
+/** AbShape rectangle
+ *
+ *  Vector halfSize must be to first quadrant (both axes non-negative).  
+ *  Specifies extent in all four directions.
  */ 
 typedef struct AbRect_s {
   void (*getBounds)(struct AbRect_s *rect, Vec2 *centerPos, Region *bounds);
@@ -150,28 +131,19 @@ typedef struct AbRect_s {
   Vec2 halfSize;	
 } AbRect;
 
-/** Computes bounding box in screen coordinates for rect centered at centerPos
- *
- *  \param rect (in) The abstract rectangle
- *  \param centerPos (in) The Vec2 specifying the center position of the rectangle
- *  \param bounds (out) The computed bounded box region
+/** As required by AbShape
  */
 void abRectGetBounds(AbRect *rect, Vec2 *centerPos, Region *bounds);
 
-/** Check if pixel is within the abRect centered at centerPos
- *
- *  \param rect (in) The abstract rectangle
- *  \param centerPos (in) The Vec2 specifying the center position of the rectangle
- *  \param pixel (in) The Vec2 specifying the location of the pixel
- *  \return True (1) if pixel is in rectangle whose tip is at centerPos
+/** As required by AbShape
  */
 int abRectCheck(AbRect *rect, Vec2 *centerPos, Vec2 *pixel);
 
-/** Abstract Circle structure that contains:
- *  a pointer a getBounds() function,
- *  a pointer to a check() function, 
- *  a half chord vector for drawing the circle, and
- *  a radius size
+/** AbShape circle
+ *  
+ *  chords should be a vector of length radius + 1.  
+ *  Entry at index i is 1/2 chord length at distance i from the circle's center.  
+ *  This vector can be generated using lcdLib's computeChordVec() (lcddraw.h).
  */ 
 typedef struct AbCircle_s {
   void (*getBounds)(struct AbCircle_s *circle, Vec2 *centerPos, Region *bounds);
@@ -180,23 +152,21 @@ typedef struct AbCircle_s {
   u_char radius;
 } AbCircle;
 
-/** Computes bounding box in screen coordinates for circle centered at circlePos
- *
- *  \param circle (in) The abstract circle
- *  \param circlePos (in) The Vec2 specifying the center position of the circle
- *  \param bounds (out) The computed bounded box region
- */void abCircleGetBounds(AbCircle *circle, Vec2 *circlePos, Region *bounds);
+/** Required by AbShape
+ */
+void abCircleGetBounds(AbCircle *circle, Vec2 *circlePos, Region *bounds);
 
-/** Check if pixel is within the abRect centered at centerPos
- *
- *  \param circle (in) The abstract circle
- *  \param circlePos (in) The Vec2 specifying the center position of the circle
- *  \param pixel (in) The Vec2 specifying the location of the pixel
- *  \return True (1) if pixel is in circle whose tip is at circlePos
- */int abCircleCheck(AbCircle *circle, Vec2 *circlePos, Vec2 *pixel);
+/** Required by AbShape
+ */
+int abCircleCheck(AbCircle *circle, Vec2 *circlePos, Vec2 *pixel);
 
-/** Layer structure that contains:
- *  A shape to be displayed
+/** Layer structure of AbShapes.  Each has a color and position.
+ *  
+ *  Next should either reference a lower layer or zero.
+ * 
+ *  Pos is the layer's current position.  
+ *
+ *  DispPos is the position where it was last rendered.  
  */
 typedef struct Layer_s {
   AbShape *abShape;
@@ -204,9 +174,18 @@ typedef struct Layer_s {
   u_int color;
   struct Layer_s *next;
 } Layer;	
+
+/** Compute layer's bounding box.
+ */
 void layerGetBounds(Layer *l, Region *bounds);
+
+
+/** Render all layers.  Pixels that are not contained by a layer are set to bgColor.
+ */
 void layerDraw(Layer *layers);
 
+/** Background color.
+  */
 extern u_int bgColor;		/*  background color */
 
 #endif
