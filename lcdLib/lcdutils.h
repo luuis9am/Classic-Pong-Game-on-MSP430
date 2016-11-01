@@ -1,9 +1,7 @@
-/*
- * lcdutils.c: 
- *
+/** \file lcdutils.h
+ *  \brief Portions derived from EduKit code by RobG
  *  Created on: 10/19/2016
  *  Author: Eric Freudenthal & David Pruitt
- *  Portions derived from EduKit code by RobG
  */
 
 #ifndef lcdutils_included
@@ -11,7 +9,7 @@
 
 typedef unsigned char u_char;
 typedef unsigned int u_int;
-//
+
 extern const unsigned char font_5x7[96][5];
 extern const unsigned char font_8x12[95][12];
 extern const unsigned int font_11x16[95][11];
@@ -19,7 +17,7 @@ extern const unsigned int font_11x16[95][11];
 extern const unsigned int colors[43];
 
 
-// Orientation
+/** Orientation */
 #define LONG_EDGE_PIXELS				160
 #define SHORT_EDGE_PIXELS				132
 #define ORIENTATION_VERTICAL			0
@@ -27,7 +25,8 @@ extern const unsigned int colors[43];
 #define ORIENTATION_VERTICAL_ROTATED	2
 #define ORIENTATION_HORIZONTAL_ROTATED	3
 
-#ifndef ORIENTATION		/* default orientation */
+/** Default Orientation */
+#ifndef ORIENTATION		
 #define ORIENTATION ORIENTATION_VERTICAL_ROTATED
 #endif
 
@@ -39,19 +38,32 @@ extern const unsigned int colors[43];
 # define screenWidth LONG_EDGE_PIXELS
 #endif
 
+/** Initialize the onboard LCD */
 void lcd_init();
+
+/** Set area to draw to
+ *  
+ *  \param colStart Start column of the area
+ *  \param rowStart Start row of the area
+ *  \param colEnd End column of the area
+ *  \param rowEnd End row of the area
+ */
 void lcd_setArea(u_char colStart, u_char rowStart, u_char colEnd, u_char rowEnd);
+
+/** Write color to LCD
+ *
+ *  \param colorBGR The color in BGR
+ */
 void lcd_writeColor(u_int colorBGR);
 
 #define rgb2bgr(val) ((((val) << 11)&0xf800) | ((val)&0x7e0) | (((val)>>11)&0x1f))
-//
-// Colors
-//
+
+/** Colors */
 #define BLACK 0x0000
 #define WHITE 0xFFFF
 #define COLOR_BLACK   BLACK
 #define COLOR_WHITE   WHITE
-//
+
 #define COLOR_BLUE              0xf800
 #define COLOR_RED 		0x001f
 #define COLOR_GREEN   		0x07e0

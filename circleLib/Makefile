@@ -25,7 +25,7 @@ install: libCircle.a abCircle.h
 
 
 clean:
-	rm -f libCircle.a abCircle.h *.o *.elf
+	rm -f libCircle.a abCircle.h *.o *.elf makeCircles
 	rm -rf circles
 
 circledemo.elf: circledemo.o libCircle.a
