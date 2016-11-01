@@ -34,7 +34,6 @@ void vec2Max(Vec2 *vecMax, const Vec2 *v1, const Vec2 *v2);
 void vec2Min(Vec2 *vecMin, const Vec2 *v1, const Vec2 *v2);
 
 /** Vector sum: result = v1 + v2
- *  
  */ 
 void vec2Add(Vec2 *result, const Vec2 *a1, const Vec2 *a2);
 
@@ -151,34 +150,13 @@ void abRectOutlineGetBounds(const AbRect *rect, const Vec2 *centerPos, Region *b
  */
 int abRectOutlineCheck(const AbRect *rect, const Vec2 *centerPos, const Vec2 *pixel);
 
-/* /\** AbShape circle */
-/*  *   */
-/*  *  chords should be a vector of length radius + 1.   */
-/*  *  Entry at index i is 1/2 chord length at distance i from the circle's center.   */
-/*  *  This vector can be generated using lcdLib's computeChordVec() (lcddraw.h). */
-/*  *\/  */
-/* typedef struct AbCircle_s { */
-/*   void (*getBounds)(const struct AbCircle_s *circle, const Vec2 *centerPos, Region *bounds); */
-/*   int (*check)(const struct AbCircle_s *circle, const Vec2 *centerPos, const Vec2 *pixel); */
-/*   const u_char *chords; */
-/*   const u_char radius; */
-/* } AbCircle; */
-
-/* /\** Required by AbShape */
-/*  *\/ */
-/* void abCircleGetBounds(const AbCircle *circle, const Vec2 *circlePos, Region *bounds); */
-
-/* /\** Required by AbShape */
-/*  *\/ */
-/* int abCircleCheck(const AbCircle *circle, const Vec2 *circlePos, const Vec2 *pixel); */
-
-/** Layer structure of AbShapes.  Each has a color and position.
- *  
- *  Next should either reference a lower layer or zero.
+/** Linked list of Layers.  
  * 
- *  Pos is the layer's current position.  
- *
- *  DispPos is the position where it was last rendered.  
+ *  Each layer contains
+ *   - a referenced to an abstract shape to be rendered.
+ *   - the layer's current position
+ *   - the layer's color
+ *   - a reference to the next (lower) layer.
  */
 typedef struct Layer_s {
   AbShape *abShape;
@@ -192,7 +170,8 @@ typedef struct Layer_s {
 void layerGetBounds(const Layer *l, Region *bounds);
 
 
-/** Render all layers.  Pixels that are not contained by a layer are set to bgColor.
+/** Render all layers.   
+ *  Pixels that are not contained by a layer are set to bgColor.
  */
 void layerDraw(Layer *layers);
 
