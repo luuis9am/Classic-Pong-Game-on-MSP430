@@ -2,20 +2,9 @@
 #include "lcdutils.h"
 #include "lcddraw.h"
 #include "shape.h"
+#include "chordVecs.h"
 
-static AbCircle circle14;
-
-void makeCircle14()
-{
-  static u_char chords14[15];	/* for a circle of radius 14 */
-  computeChordVec(chords14, 14);
-  circle14.radius = 14;
-  circle14.chords = chords14;
-  circle14.check = abCircleCheck;
-  circle14.getBounds = abCircleGetBounds;
-}  
-
-AbRect rect10 = {abRectGetBounds, abRectCheck, 10,10};;
+const AbRect rect10 = {abRectGetBounds, abRectCheck, 10,10};;
 
 abDrawPos(AbShape *shape, Vec2 *shapeCenter, u_int fg_color, u_int bg_color)
 {
@@ -41,16 +30,14 @@ main()
   configureClocks();
   lcd_init();
   shapeInit();
-  Vec2 rectPos = screenCenter, circlePos = {30,screenHeight - 30};
+  Vec2 rectPos = screenCenter;
 
   clearScreen(COLOR_BLUE);
   drawString5x7(20,20, "hello", COLOR_GREEN, COLOR_RED);
   shapeInit();
   
-  makeCircle14();
+  abDrawPos((AbShape*)&rect10, &rectPos, COLOR_ORANGE, COLOR_BLUE);
 
-  abDrawPos((AbShape*)&circle14, &rectPos, COLOR_ORANGE, COLOR_BLUE);
-  abDrawPos((AbShape*)&rect10, &circlePos, COLOR_RED, COLOR_BLUE);
   //  drawCircle();
   //  drawRect();
 }

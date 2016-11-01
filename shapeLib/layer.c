@@ -3,7 +3,7 @@
 #include "shape.h"
 
 void
-layerGetBounds(Layer *l, Region *bounds)
+layerGetBounds(const Layer *l, Region *bounds)
 {
   Region dispBounds, curBounds;
   abShapeGetBounds(l->abShape, &l->pos, &curBounds);

@@ -94,38 +94,3 @@ void drawRectOutline(u_char colMin, u_char rowMin, u_char width, u_char height,
   fillRectangle(colMin + width, rowMin, 1, height, colorBGR);
 }
 
-///////////////////////////////////////////
-// build table chordVec[d] of circle 1/2 widths at distances d from center
-// Code adapted from RobG's EduKit
-// Uses Bresenham's circle algorithm
-///////////////////////////////////////////
-void computeChordVec(u_char chordVec[], u_char radius) 
-{
-  int col = radius, row = 0;	/* first coordinate (radius, 0) */
-
-  // key insight: (col+1)**2 - col**2 = 2col+1
-
-  int dColSquared = 2 * col - 1;  // change in col**2 for a unit decrease in col
-  int dRowSquared = 1;	    // change in row**2 for a unit increase in row
-
-  int radiusSqErr = 0;		/* (radius, 0) is on the circle  */
-  int colPrev = 0;		/* initially bogus value  to force first entry*/
-  while (col >= row) {		/* only sweep first octant */
-    chordVec[row] = col;      /* row always changes in first octant */
-
-    /* mirror into 2nd octant */
-    if (colPrev != col)		/* col sometimes repeats in first octant */
-      chordVec[col] = row;	/* only save first (max) col for row */
-    colPrev = col;
-
-    row++;			/* move vertically (slope <= -1 for first octant) */
-    radiusSqErr += dRowSquared;	/* current radiusSqErr */
-    dRowSquared += 2; 		/* next dRowSquared */
-    if ((2 * radiusSqErr) > dColSquared) { /* only update col if error reduced */
-      col--;			/* move horizontally */
-      radiusSqErr -= dColSquared;	/* current radiusSqErr */
-      dColSquared -= 2;	      /* next dColSquared */
-    }
-  }
-}
-

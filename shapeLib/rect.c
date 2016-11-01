@@ -2,7 +2,7 @@
 
 // true if pixel is in rect centerPosed at rectPos
 int 
-abRectCheck(AbRect *rect, Vec2 *centerPos, Vec2 *pixel)
+abRectCheck(const AbRect *rect, const Vec2 *centerPos, const Vec2 *pixel)
 {
   Region bounds;
   abRectGetBounds(rect, centerPos, &bounds);
@@ -16,7 +16,7 @@ abRectCheck(AbRect *rect, Vec2 *centerPos, Vec2 *pixel)
 }
 
 // compute bounding box in screen coordinates for rect at centerPos
-void abRectGetBounds(AbRect *rect, Vec2 *centerPos, Region *bounds)
+void abRectGetBounds(const AbRect *rect, const Vec2 *centerPos, Region *bounds)
 {
   vec2Sub(&bounds->topLeft, centerPos, &rect->halfSize);
   vec2Add(&bounds->botRight, centerPos, &rect->halfSize);
@@ -26,7 +26,7 @@ void abRectGetBounds(AbRect *rect, Vec2 *centerPos, Region *bounds)
 
 // true if pixel is in rect centerPosed at rectPos
 int 
-abRectOutlineCheck(AbRectOutline *rect, Vec2 *centerPos, Vec2 *pixel)
+abRectOutlineCheck(const AbRectOutline *rect, const Vec2 *centerPos, const Vec2 *pixel)
 {
   Region bounds;
   abRectOutlineGetBounds(rect, centerPos, &bounds);
@@ -43,7 +43,7 @@ abRectOutlineCheck(AbRectOutline *rect, Vec2 *centerPos, Vec2 *pixel)
 }
  
 // compute bounding box in screen coordinates for rect at centerPos
-void abRectOutlineGetBounds(AbRectOutline *rect, Vec2 *centerPos, Region *bounds)
+void abRectOutlineGetBounds(const AbRectOutline *rect, const Vec2 *centerPos, Region *bounds)
 {
   vec2Sub(&bounds->topLeft, centerPos, &rect->halfSize);
   vec2Add(&bounds->botRight, centerPos, &rect->halfSize);

@@ -12,21 +12,10 @@
 #include <lcddraw.h>
 #include <p2switches.h>
 #include <shape.h>
+#include <abCircle.h>
 
 #define GREEN_LED BIT6
 
-static AbCircle circle14;
-
-/** Makes a circle of radius 14 */
-void makeCircle14()
-{
-  static u_char chords14[15];	/**< for drawing a circle of radius 14 */
-  computeChordVec(chords14, 14);
-  circle14.radius = 14;
-  circle14.chords = chords14;
-  circle14.check = abCircleCheck;
-  circle14.getBounds = abCircleGetBounds;
-}  
 
 AbRect rect10 = {abRectGetBounds, abRectCheck, {10,10}};; /**< 10x10 rectangle */
 
@@ -147,16 +136,15 @@ Region fieldFence;		/**< fence around playing field  */
  */
 void main()
 {
+  P1DIR |= GREEN_LED;		/**< Green led on when CPU on */		
+  P1OUT |= GREEN_LED;
+
   configureClocks();
   lcd_init();
   shapeInit();
   p2sw_init(1);
-  Vec2 rectPos = screenCenter, circlePos = {30,screenHeight - 30};
 
-  //  clearScreen(COLOR_BLUE);
-  //  drawString5x7(20,20, "hello", COLOR_GREEN, COLOR_BLUE);
   shapeInit();
-  makeCircle14();
 
   layerDraw(&layer0);
 
@@ -165,7 +153,7 @@ void main()
   enableWDTInterrupts();      /**< enable periodic interrupt */
   or_sr(0x8);			            /**< GIE (enable interrupts) */
 
-  P1DIR |= GREEN_LED;		
+
   for(;;) { 
     while (!redrawScreen) { /**< Pause CPU if screen doesn't need updating */
       P1OUT &= ~GREEN_LED;    /**< Green led off with CPU */

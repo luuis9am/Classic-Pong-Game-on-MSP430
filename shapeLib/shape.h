@@ -15,7 +15,7 @@ typedef struct {
   int axes[2];
 } Vec2;
 
-extern Vec2 screenSize, screenCenter, vec2Unit, vec2Zero;
+extern const Vec2 screenSize, screenCenter, vec2Unit, vec2Zero;
 
 /** vec2Max computes the maximum in both dimensions.
  *  
@@ -23,7 +23,7 @@ extern Vec2 screenSize, screenCenter, vec2Unit, vec2Zero;
  *  \param (in) v1 Vector 1
  *  \param (in) v2 Vector 2
  */ 
-void vec2Max(Vec2 *vecMax, Vec2 *v1, Vec2 *v2);
+void vec2Max(Vec2 *vecMax, const Vec2 *v1, const Vec2 *v2);
 
 /** vec2Min computes the minimum in both dimensions
  *  
@@ -31,17 +31,17 @@ void vec2Max(Vec2 *vecMax, Vec2 *v1, Vec2 *v2);
  *  \param v1 (in) Vector 1
  *  \param v2 (in) Vector 2
  */ 
-void vec2Min(Vec2 *vecMin, Vec2 *v1, Vec2 *v2);
+void vec2Min(Vec2 *vecMin, const Vec2 *v1, const Vec2 *v2);
 
 /** Vector sum: result = v1 + v2
  *  
  */ 
-void vec2Add(Vec2 *result, Vec2 *a1, Vec2 *a2);
+void vec2Add(Vec2 *result, const Vec2 *a1, const Vec2 *a2);
 
 /** Vector difference: result = v1 - v2
  *  
  */ 
-void vec2Sub(Vec2 *result, Vec2 *a1, Vec2 *a2);
+void vec2Sub(Vec2 *result, const Vec2 *a1, const Vec2 *a2);
 
 /** Absolute value in each direction
  *  
@@ -57,7 +57,7 @@ typedef struct {
 
 /** Computes the bounding box containing two regions.
  */
-void regionUnion(Region *rUnion, Region *r1, Region *r2);
+void regionUnion(Region *rUnion, const Region *r1, const Region *r2);
 
 /** Clip region within screen bounds
  */
@@ -82,8 +82,8 @@ void shapeInit();
  *  rendered at centerPos
  */
 typedef struct AbShape_s{		/* base type for all abstrct shapes */
-  void (*getBounds)(struct AbShape_s *shape, Vec2 *centerPos, Region *bounds);
-  int (*check)(struct AbShape_s *shape, Vec2 *centerPos, Vec2 *pixelLoc);
+  void (*getBounds)(const struct AbShape_s *shape, const Vec2 *centerPos, Region *bounds);
+  int (*check)(const struct AbShape_s *shape, const Vec2 *centerPos, const Vec2 *pixelLoc);
 } AbShape;
 
 /** Computes bounding box of abShape in screen coordinates 
@@ -92,7 +92,7 @@ typedef struct AbShape_s{		/* base type for all abstrct shapes */
  *  \param centerPos (in) The Vec2 specifying the center poisiton of the shape
  *  \param bounds (out) The computed bounding box region
  */
-void abShapeGetBounds(AbShape *s, Vec2 *centerPos, Region *bounds);
+void abShapeGetBounds(const AbShape *s, const Vec2 *centerPos, Region *bounds);
 
 /** Check if pixel is within the abShape centered at centerPos
  *
@@ -101,7 +101,7 @@ void abShapeGetBounds(AbShape *s, Vec2 *centerPos, Region *bounds);
  *  \param pixelLoc (in) The Vec2 specifying the location of the pixel
  *  \return True (1) if pixel is in the abShape centered at centerPos 
  */
-int abShapeCheck(AbShape *shape, Vec2 *centerPos, Vec2 *pixelLoc);
+int abShapeCheck(const AbShape *shape, const Vec2 *centerPos, const Vec2 *pixelLoc);
 
 /** An AbShape Right Arrow with filled tip
  *
@@ -109,18 +109,18 @@ int abShapeCheck(AbShape *shape, Vec2 *centerPos, Vec2 *pixelLoc);
  *  The "centerPos is at the arrow's tip.
  */
 typedef struct AbRArrow_s {
-  void (*getBounds)(struct AbRArrow_s *shape, Vec2 *centerPos, Region *bounds);
-  int (*check)(struct AbRArrow_s *shape, Vec2 *centerPos, Vec2 *pixelLoc);
+  void (*getBounds)(const struct AbRArrow_s *shape, const Vec2 *centerPos, Region *bounds);
+  int (*check)(const struct AbRArrow_s *shape, const Vec2 *centerPos, const Vec2 *pixelLoc);
   int size;
 } AbRArrow;
 
 /** As required by AbShape
  */
-void abRArrowGetBounds(AbRArrow *arrow, Vec2 *centerPos, Region *bounds);
+void abRArrowGetBounds(const AbRArrow *arrow, const Vec2 *centerPos, Region *bounds);
 
 /** As required by AbShape
  */
-int abRArrowCheck(AbRArrow *arrow, Vec2 *centerPos, Vec2 *pixel);
+int abRArrowCheck(const AbRArrow *arrow, const Vec2 *centerPos, const Vec2 *pixel);
 
 /** AbShape rectangle
  *
@@ -128,49 +128,49 @@ int abRArrowCheck(AbRArrow *arrow, Vec2 *centerPos, Vec2 *pixel);
  *  Specifies extent in all four directions.
  */ 
 typedef struct AbRect_s {
-  void (*getBounds)(struct AbRect_s *rect, Vec2 *centerPos, Region *bounds);
-  int (*check)(struct AbRect_s *shape, Vec2 *centerPos, Vec2 *pixel);
-  Vec2 halfSize;	
+  void (*getBounds)(const struct AbRect_s *rect, const Vec2 *centerPos, Region *bounds);
+  int (*check)(const struct AbRect_s *shape, const Vec2 *centerPos, const Vec2 *pixel);
+  const Vec2 halfSize;	
 } AbRect;
 
 /** As required by AbShape
  */
-void abRectGetBounds(AbRect *rect, Vec2 *centerPos, Region *bounds);
+void abRectGetBounds(const AbRect *rect, const Vec2 *centerPos, Region *bounds);
 
 /** As required by AbShape
  */
-int abRectCheck(AbRect *rect, Vec2 *centerPos, Vec2 *pixel);
+int abRectCheck(const AbRect *rect, const Vec2 *centerPos, const Vec2 *pixel);
 
 typedef AbRect AbRectOutline;	/* same as AbRect */
 
 /** As required by AbShape
  */
-void abRectOutlineGetBounds(AbRect *rect, Vec2 *centerPos, Region *bounds);
+void abRectOutlineGetBounds(const AbRect *rect, const Vec2 *centerPos, Region *bounds);
 
 /** As required by AbShape
  */
-int abRectOutlineCheck(AbRect *rect, Vec2 *centerPos, Vec2 *pixel);
+int abRectOutlineCheck(const AbRect *rect, const Vec2 *centerPos, const Vec2 *pixel);
 
-/** AbShape circle
- *  
- *  chords should be a vector of length radius + 1.  
- *  Entry at index i is 1/2 chord length at distance i from the circle's center.  
- *  This vector can be generated using lcdLib's computeChordVec() (lcddraw.h).
- */ 
-typedef struct AbCircle_s {
-  void (*getBounds)(struct AbCircle_s *circle, Vec2 *centerPos, Region *bounds);
-  int (*check)(struct AbCircle_s *circle, Vec2 *centerPos, Vec2 *pixel);
-  u_char *chords;
-  u_char radius;
-} AbCircle;
+/* /\** AbShape circle */
+/*  *   */
+/*  *  chords should be a vector of length radius + 1.   */
+/*  *  Entry at index i is 1/2 chord length at distance i from the circle's center.   */
+/*  *  This vector can be generated using lcdLib's computeChordVec() (lcddraw.h). */
+/*  *\/  */
+/* typedef struct AbCircle_s { */
+/*   void (*getBounds)(const struct AbCircle_s *circle, const Vec2 *centerPos, Region *bounds); */
+/*   int (*check)(const struct AbCircle_s *circle, const Vec2 *centerPos, const Vec2 *pixel); */
+/*   const u_char *chords; */
+/*   const u_char radius; */
+/* } AbCircle; */
 
-/** Required by AbShape
- */
-void abCircleGetBounds(AbCircle *circle, Vec2 *circlePos, Region *bounds);
+/* /\** Required by AbShape */
+/*  *\/ */
+/* void abCircleGetBounds(const AbCircle *circle, const Vec2 *circlePos, Region *bounds); */
 
-/** Required by AbShape
- */
-int abCircleCheck(AbCircle *circle, Vec2 *circlePos, Vec2 *pixel);
+/* /\** Required by AbShape */
+/*  *\/ */
+/* int abCircleCheck(const AbCircle *circle, const Vec2 *circlePos, const Vec2 *pixel); */
 
 /** Layer structure of AbShapes.  Each has a color and position.
  *  
@@ -189,7 +189,7 @@ typedef struct Layer_s {
 
 /** Compute layer's bounding box.
  */
-void layerGetBounds(Layer *l, Region *bounds);
+void layerGetBounds(const Layer *l, Region *bounds);
 
 
 /** Render all layers.  Pixels that are not contained by a layer are set to bgColor.

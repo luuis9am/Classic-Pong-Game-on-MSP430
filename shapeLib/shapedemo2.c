@@ -3,18 +3,6 @@
 #include "lcddraw.h"
 #include "shape.h"
 
-static AbCircle circle14;
-
-void makeCircle14()
-{
-  static u_char chords14[15];	/* for a circle of radius 14 */
-  computeChordVec(chords14, 14);
-  circle14.radius = 14;
-  circle14.chords = chords14;
-  circle14.check = abCircleCheck;
-  circle14.getBounds = abCircleGetBounds;
-}  
-
 AbRect rect10 = {abRectGetBounds, abRectCheck, 10,10};;
 
 
@@ -29,7 +17,7 @@ Layer layer1 = {
   0,
 };
 Layer layer0 = {
-  (AbShape *)&circle14,
+  (AbShape *)&rect10,
   {(screenWidth/2)+10, (screenHeight/2)+5}, /* position */
   {(screenWidth/2)+10, (screenHeight/2)+5}, 
   COLOR_ORANGE,
@@ -52,13 +40,8 @@ main()
   drawString5x7(20,20, "hello", COLOR_GREEN, COLOR_RED);
   shapeInit();
   
-  makeCircle14();
   layerDraw(&layer0);
   
-  //  abDrawPos((AbShape*)&circle14, &rectPos, COLOR_ORANGE, COLOR_BLUE);
-  //  abDrawPos((AbShape*)&rect10, &circlePos, COLOR_RED, COLOR_BLUE);
-  //  drawCircle();
-  //  drawRect();
 }
 
 

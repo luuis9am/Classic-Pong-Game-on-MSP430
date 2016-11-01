@@ -1,7 +1,7 @@
 #include "shape.h"
 
 void
-vec2Max(Vec2 *vecMax, Vec2 *v1, Vec2 *v2)
+vec2Max(Vec2 *vecMax, const Vec2 *v1, const Vec2 *v2)
 {
   u_char axis;
   for (axis = 0; axis < 2; axis ++) {
@@ -11,7 +11,7 @@ vec2Max(Vec2 *vecMax, Vec2 *v1, Vec2 *v2)
 }
 
 void
-vec2Min(Vec2 *vecMin, Vec2 *v1, Vec2 *v2)
+vec2Min(Vec2 *vecMin, const Vec2 *v1, const Vec2 *v2)
 {
   u_char axis;
   for (axis = 0; axis < 2; axis ++) {
@@ -21,7 +21,7 @@ vec2Min(Vec2 *vecMin, Vec2 *v1, Vec2 *v2)
 }
 
 void 
-vec2Add(Vec2 *result, Vec2 *v1, Vec2 *v2)
+vec2Add(Vec2 *result, const Vec2 *v1, const Vec2 *v2)
 {
   u_char axis;
   for (axis = 0; axis < 2; axis ++) {
@@ -30,7 +30,7 @@ vec2Add(Vec2 *result, Vec2 *v1, Vec2 *v2)
 }
 
 void 
-vec2Sub(Vec2 *result, Vec2 *v1, Vec2 *v2)
+vec2Sub(Vec2 *result, const Vec2 *v1, const Vec2 *v2)
 {
   u_char axis;
   for (axis = 0; axis < 2; axis ++) {

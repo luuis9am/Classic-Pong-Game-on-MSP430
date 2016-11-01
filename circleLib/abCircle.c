@@ -1,8 +1,8 @@
 #include "shape.h"
-
+#include "_abCircle.h"
 
 // true if pixel is in circle centered at centerPos
-int abCircleCheck(AbCircle *circle, Vec2 *centerPos, Vec2 *pixel)
+int abCircleCheck(const AbCircle *circle, const Vec2 *centerPos, const Vec2 *pixel)
 {
   u_char radius = circle->radius;
   int axis;
@@ -13,7 +13,7 @@ int abCircleCheck(AbCircle *circle, Vec2 *centerPos, Vec2 *pixel)
 }
   
 void
-abCircleGetBounds(AbCircle *circle, Vec2 *centerPos, Region *bounds)
+abCircleGetBounds(const AbCircle *circle, const Vec2 *centerPos, Region *bounds)
 {
   u_char axis, radius = circle->radius;
   for (axis = 0; axis < 2; axis ++) {

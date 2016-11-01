@@ -2,7 +2,7 @@
 
 // compute union of two regions
 void 
-regionUnion(Region *rUnion, Region *r1, Region *r2)
+regionUnion(Region *rUnion, const Region *r1, const Region *r2)
 {
   vec2Min(&rUnion->topLeft, &r1->topLeft, &r2->topLeft);
   vec2Max(&rUnion->botRight, &r1->botRight, &r2->botRight);

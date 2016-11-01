@@ -3,7 +3,7 @@
 
 // true if pixel is in arrow whose tip is at centerPos
 int 
-abRArrowCheck(AbRArrow *arrow, Vec2 *centerPos, Vec2 *pixel)
+abRArrowCheck(const AbRArrow *arrow, const Vec2 *centerPos, const Vec2 *pixel)
 {
   Vec2 relPos;
   int row, col, within = 0;
@@ -18,7 +18,7 @@ abRArrowCheck(AbRArrow *arrow, Vec2 *centerPos, Vec2 *pixel)
 
 // compute bounding box in screen coordinates for arrow with whose tip is at centerPos
 void 
-abRArrowGetBounds(AbRArrow *arrow, Vec2 *centerPos, Region *bounds)
+abRArrowGetBounds(const AbRArrow *arrow, const Vec2 *centerPos, Region *bounds)
 {
   int size = arrow->size, halfSize = size / 2;
   bounds->topLeft.axes[0] = centerPos->axes[0] - size;
