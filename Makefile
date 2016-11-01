@@ -12,4 +12,5 @@ clean:
 	(cd shapeLib; make clean)
 	(cd p2swLib; make clean)
 	(cd shape-motion-demo; make clean)
+	(cd circleLib; make clean)
 	rm -rf lib h
