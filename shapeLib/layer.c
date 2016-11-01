@@ -16,8 +16,31 @@ void
 layerDraw(Layer *layers)
 {
   int row, col;
+  for (row = 0; row < screenHeight; row++) {
+    lcd_setArea(0, row, screenWidth-1, row);
+    for (col = 0; col < screenWidth; col++) {
+      Vec2 pixelPos = {col, row};
+      u_int color = bgColor;
+      Layer *probeLayer;
+      for (probeLayer = layers; probeLayer; probeLayer = probeLayer->next) {
+	if (abShapeCheck(probeLayer->abShape, &probeLayer->pos, &pixelPos)) {
+	  color = probeLayer->color;
+	  break; 
+	} /* if check */
+      } // for checking all layers at col, row
+      lcd_writeColor(color); 
+    } // for col
+  } // for row
+} 
+
+
+
+void
+layerDrawOld(Layer *layers)
+{
   Layer *boundLayer, *probeLayer;
   for (boundLayer=layers; boundLayer; boundLayer=boundLayer->next) {
+    int row, col;
     Region bounds;
     layerGetBounds(boundLayer, &bounds);
     lcd_setArea(bounds.topLeft.axes[0], bounds.topLeft.axes[1],
@@ -39,3 +62,5 @@ layerDraw(Layer *layers)
   for (boundLayer=layers; boundLayer; boundLayer=boundLayer->next)
     boundLayer->dispPos = boundLayer->pos;
 }	  
+
+

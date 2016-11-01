@@ -44,6 +44,7 @@ vec2Abs(Vec2 *vec)
   u_char axis;
   for (axis = 0; axis < 2; axis ++) {
     int val = vec->axes[axis];
-    vec->axes[axis] = (val >= 0) ? val : -val;
+    if (val < 0)
+      vec->axes[axis] = -val;
   }
 }

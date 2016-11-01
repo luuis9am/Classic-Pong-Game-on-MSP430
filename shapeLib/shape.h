@@ -65,6 +65,8 @@ void regionClipScreen(Region *region);
 
 /** This function initializes the screen
  *  vectors that are used by shapes
+ *
+ *  Not needed anymore.
  */
 void shapeInit();
 
@@ -138,6 +140,16 @@ void abRectGetBounds(AbRect *rect, Vec2 *centerPos, Region *bounds);
 /** As required by AbShape
  */
 int abRectCheck(AbRect *rect, Vec2 *centerPos, Vec2 *pixel);
+
+typedef AbRect AbRectOutline;	/* same as AbRect */
+
+/** As required by AbShape
+ */
+void abRectOutlineGetBounds(AbRect *rect, Vec2 *centerPos, Region *bounds);
+
+/** As required by AbShape
+ */
+int abRectOutlineCheck(AbRect *rect, Vec2 *centerPos, Vec2 *pixel);
 
 /** AbShape circle
  *  
