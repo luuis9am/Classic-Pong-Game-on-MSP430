@@ -14,6 +14,8 @@ Your game should meet the following minimum criteria:
 Don't forget to properly document your source code and how to play the game.
 
 ## Grading Criteria
+Your lab will be graded based on the level of understanding shown and demonstrated in your game (i.e. the complexity of your game).  The grading will follow a traditional letter grade scale (A, B, C, F).
+
 Consider the requirements of producing a simple game of pong.  You have the following elements:
 
 - an arena to play in
@@ -28,3 +30,10 @@ And the game usually behaves with the following functionality:
 - a player scores when the ball makes it to the opposite side of the screen
 - the score is updated and the game begins again
 
+Developing a pong game with the minimum features (discussed above) will earn you a grade of a C.  
+
+To earn a better grade, consider the following ideas to improve the game of pong:
+
+- the ball increases in speed as the player progresses through the game
+- similarly with the size of the paddle
+- rendering the game in such a way that the score is not overwritten (because it can be)
