@@ -82,3 +82,12 @@ In order to explore shape rendering, students are encouraged to create additinal
 ## Installing the AbShape lib (for other programs)
 
 $ make install
+
+## See Also
+
+LibShape requires LibLcd (in directory ../libLcd).  Be sure to "make install" it first!
+
+LibCircle (in directory ../circleLib) defines AbCircles of various diameters.  It requires shapeLib.
+
+Shape-motion-demo (in directory shape-motion-demo) implements moving AbShapes.
+
