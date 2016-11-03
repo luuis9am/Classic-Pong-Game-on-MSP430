@@ -17,20 +17,29 @@
 #define GREEN_LED BIT6
 
 
-AbRect rect10 = {abRectGetBounds, abRectCheck, {10,10}};; /**< 10x10 rectangle */
+AbRect rect10 = {abRectGetBounds, abRectCheck, {10,10}}; /**< 10x10 rectangle */
+AbRArrow rightArrow = {abRArrowGetBounds, abRArrowCheck, 8};
 
 AbRectOutline fieldOutline = {	/* playing field */
   abRectOutlineGetBounds, abRectOutlineCheck,   
   {screenWidth/2 - 10, screenHeight/2 - 10}
 };
 
+Layer layer4 = {
+  (AbShape *)&rightArrow,
+  {(screenWidth/2)+10, (screenHeight/2)+5}, /**< bit below & right of center */
+  {(screenWidth/2)+10, (screenHeight/2)+5}, 
+  COLOR_PINK,
+  0
+};
+  
 
 Layer layer3 = {		/**< Layer with an orange circle */
   (AbShape *)&circle8,
   {(screenWidth/2)+10, (screenHeight/2)+5}, /**< bit below & right of center */
   {(screenWidth/2)+10, (screenHeight/2)+5}, 
-  COLOR_PINK,
-  0,
+  COLOR_VIOLET,
+  &layer4,
 };
 
 
