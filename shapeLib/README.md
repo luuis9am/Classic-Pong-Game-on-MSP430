@@ -23,7 +23,7 @@ An AbShape is implemtned as a struct that contains
  - a pointer to a "getBounds" function that computes the bounding
    rectangle surrounding an AbShape.
 
- = a pointer to a "check" function that determines whether an contains a specified pixel locatin.
+ - a pointer to a "check" function that determines whether an contains a specified pixel locatin.
 
 Parameters to both of thse functions include:
 
