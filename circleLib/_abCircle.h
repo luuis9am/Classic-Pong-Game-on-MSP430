@@ -25,3 +25,6 @@ void abCircleGetBounds(const AbCircle *circle, const Vec2 *circlePos, Region *bo
 int abCircleCheck(const AbCircle *circle, const Vec2 *circlePos, const Vec2 *pixel);
 
 #endif
+
+
+

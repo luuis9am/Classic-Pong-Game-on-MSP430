@@ -3,29 +3,35 @@
 #include "lcddraw.h"
 #include "shape.h"
 
-AbRect rect10 = {abRectGetBounds, abRectCheck, 10,10};;
+AbRect rect10 = {abRectGetBounds, abRectCheck, 10,10};
+AbRArrow arrow30 = {abRArrowGetBounds, abRArrowCheck, 30};
 
 
 Region fence = {{10,30}, {SHORT_EDGE_PIXELS-10, LONG_EDGE_PIXELS-10}};
 
 
-#define numLayers 2
+Layer layer2 = {
+  (AbShape *)&arrow30,
+  {screenWidth/2+40, screenHeight/2+10}, 	    /* position */
+  {0,0}, {0,0},				    /* last & next pos */
+  COLOR_BLACK,
+  0,
+};
 Layer layer1 = {
   (AbShape *)&rect10,
-  {screenWidth/2, screenHeight/2},{screenWidth/2, screenHeight/2}, /* position */
+  {screenWidth/2, screenHeight/2}, 	    /* position */
+  {0,0}, {0,0},				    /* last & next pos */
   COLOR_RED,
-  0,
+  &layer2,
 };
 Layer layer0 = {
   (AbShape *)&rect10,
   {(screenWidth/2)+10, (screenHeight/2)+5}, /* position */
-  {(screenWidth/2)+10, (screenHeight/2)+5}, 
+  {0,0}, {0,0},				    /* last & next pos */
   COLOR_ORANGE,
   &layer1,
 };
 
-
-    
 
 u_int bgColor = COLOR_BLUE;
 
@@ -40,6 +46,7 @@ main()
   drawString5x7(20,20, "hello", COLOR_GREEN, COLOR_RED);
   shapeInit();
   
+  layerInit(&layer0);
   layerDraw(&layer0);
   
 }

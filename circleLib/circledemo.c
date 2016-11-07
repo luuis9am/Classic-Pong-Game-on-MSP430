@@ -11,7 +11,7 @@ u_int bgColor = COLOR_BLUE;
 Layer layer1 = {		/**< Layer with a red square */
   (AbShape *)&rect10,
   {screenWidth/2, screenHeight/2}, /**< center */
-  {screenWidth/2, screenHeight/2}, 
+  {0,0}, {0,0},				    /* next & last pos */
   COLOR_RED,
   0
 };
@@ -19,7 +19,7 @@ Layer layer1 = {		/**< Layer with a red square */
 Layer layer0 = {		/**< Layer with an orange circle */
   (AbShape *)&circle14,
   {(screenWidth/2)+10, (screenHeight/2)+5}, /**< bit below & right of center */
-  {(screenWidth/2)+10, (screenHeight/2)+5}, 
+  {0,0}, {0,0},				    /* next & last pos */
   COLOR_ORANGE,
   &layer1,
 };

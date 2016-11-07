@@ -160,7 +160,7 @@ int abRectOutlineCheck(const AbRect *rect, const Vec2 *centerPos, const Vec2 *pi
  */
 typedef struct Layer_s {
   AbShape *abShape;
-  Vec2 pos, dispPos;
+  Vec2 pos, posLast, posNext; /* initially just set pos */
   u_int color;
   struct Layer_s *next;
 } Layer;	
@@ -169,6 +169,10 @@ typedef struct Layer_s {
  */
 void layerGetBounds(const Layer *l, Region *bounds);
 
+/**
+  sets bounds into a consistent state
+ */
+void layerInit(Layer *layers);
 
 /** Render all layers.   
  *  Pixels that are not contained by a layer are set to bgColor.

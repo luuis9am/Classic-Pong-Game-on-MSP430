@@ -1,7 +1,9 @@
 # shapeLib from Project 3: LCD Game
 ## Introduction
 
-ShapeLib provides a framework for rendering simple graphical elements called AbShapes, which represent abstract shapes.
+ShapeLib provides a framework for rendering simple graphical elements
+called AbShapes.  AbShapes represent abstract shapes that can be
+rendered at any screen position.  
 
 Two structs are defined that are used to represent pixel positions:
 
@@ -59,19 +61,26 @@ A layering model is also defined.  Layers are represented by "Layer" structs whi
 
 ## Demo code
 
-Shapedemo.c is a program that displays multiple abshapes without using layering.  It can be compiled and loaded using the "load" make
+Shapedemo.c displays multiple abshapes without using layering.  It can be compiled and loaded using the "load" make
 production.
 
-Shapedemo2.c is a program that displays multiple abshapes using layering.  It can be compiled and loaded using the "load2" make
+Shapedemo2.c displays multiple abshapes using layering.  It can be compiled and loaded using the "load2" make
 production.
+
+Shapedemo3.c slices a right triangle off of a square.   
 
 ## Suggested exercises
 
 In order to explore shape rendering, students are encouraged to create additinal "demo" programs that: 
 
- - render additional AbShapes with differing size, position, and color attributes.
+ - render rectangles with different heights, widths, and colors
 
- - define additional AbShapes such as diamond and rectangular boxes containing text strings.
+ - like, shapedemo3, slice out portions of a rectangle.  
+
+ - define additional AbShapes such as diamond and rectangular boxes
+   containing text strings.
+
+ - create composite shapes that are unions, intersections, or even XORs of other shapes
 
 ## Installing the shape lib (for other programs)
 

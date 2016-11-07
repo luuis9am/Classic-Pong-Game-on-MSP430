@@ -13,16 +13,17 @@ abRArrowCheck(const AbRArrow *arrow, const Vec2 *centerPos, const Vec2 *pixel)
   int halfSize = size/2, quarterSize = halfSize/2;;
   vec2Sub(&relPos, pixel, centerPos); /* vector from center to pixel */
   row = relPos.axes[1]; col = -relPos.axes[0]; /* note that col is negated */
-  if (col >= 0 && col <= size) {	       /* pixel between -size and center */
-    row = (row >= 0) ? row : -row;	       /* row = |row| */
-    within =  
-      ((row <= col) && (col < halfSize)) /* head of arrow */
-      || 
-      (row <= quarterSize);	/* shaft of arrow */
+  row = (row >= 0) ? row : -row;/* row = |row| */
+  if (col >= 0) {		/* not to right of arrow */
+    if (col <= halfSize) {	/* within arrow tip */
+      within = row <= col;
+    } else if (col <= size) {	/* within arrow stem */
+      within = row <= quarterSize;
+    }
   }
   return within;
 }
-
+  
 /** Check function required by AbShape
  *  abRArrowGetBounds computes a right arrow's bounding box
  */

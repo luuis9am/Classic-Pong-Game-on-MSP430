@@ -26,14 +26,15 @@ Region fence = {{10,30}, {SHORT_EDGE_PIXELS-10, LONG_EDGE_PIXELS-10}};
 #define numLayers 2
 Layer layer1 = {
   (AbShape *)&rect10,
-  {screenWidth/2, screenHeight/2},{screenWidth/2, screenHeight/2}, /* position */
+  {screenWidth/2, screenHeight/2}, /* position */
+  {0,0}, {0,0},				    /* last & next pos */
   COLOR_RED,
   0,
 };
 Layer layer0 = {
   (AbShape *)&rect10,
   {(screenWidth/2)+15, (screenHeight/2)+10}, /* position */
-  {(screenWidth/2)+15, (screenHeight/2)+10}, 
+  {0,0}, {0,0},				    /* last & next pos */
   COLOR_ORANGE,
   &layer1,
 };

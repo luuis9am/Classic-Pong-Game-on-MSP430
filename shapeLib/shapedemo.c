@@ -2,7 +2,6 @@
 #include "lcdutils.h"
 #include "lcddraw.h"
 #include "shape.h"
-#include "chordVecs.h"
 
 const AbRect rect10 = {abRectGetBounds, abRectCheck, 10,10};;
 
@@ -38,8 +37,6 @@ main()
   
   abDrawPos((AbShape*)&rect10, &rectPos, COLOR_ORANGE, COLOR_BLUE);
 
-  //  drawCircle();
-  //  drawRect();
 }
 
 
