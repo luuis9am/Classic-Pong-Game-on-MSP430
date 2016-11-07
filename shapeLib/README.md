@@ -61,13 +61,15 @@ A layering model is also defined.  Layers are represented by "Layer" structs whi
 
 ## Demo code
 
-Shapedemo.c displays multiple abshapes without using layering.  It can be compiled and loaded using the "load" make
+- Shapedemo.c displays multiple abshapes without using layering.  It can be loaded using the "load" make
 production.
 
-Shapedemo2.c displays multiple abshapes using layering.  It can be compiled and loaded using the "load2" make
-production.
+- Shapedemo2.c displays multiple abshapes using layering.  It can be
+  loaded using the "load2" make production.
 
-Shapedemo3.c slices a right triangle off of a square.   
+- Shapedemo3.c slices a right triangle off of a square.  This is a
+  powerful idiom worth examining carefully.  It can be loaded using
+  the "load3" make production.
 
 ## Suggested exercises
 

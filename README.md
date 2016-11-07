@@ -32,8 +32,7 @@ And the game usually behaves with the following functionality:
 
 Developing a pong game with the minimum features (discussed above) will earn you a grade of a C.  
 
-To earn a better grade, consider the following ideas to improve the game of pong:
+To earn a better grade (for pong), consider the following ideas:
 
-- the ball increases in speed as the player progresses through the game
-- similarly with the size of the paddle
-- rendering the game in such a way that the score is not overwritten (because it can be)
+- shapes, colors, speeds and sizes of graphical elements change size in response to player skill
+- rendering the game in such a way that moving objects pass through (but don't erase) the score
