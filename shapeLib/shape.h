@@ -80,7 +80,7 @@ void shapeInit();
  *  check: A function that determines if the AbShape contains pixelLoc when 
  *  rendered at centerPos
  */
-typedef struct AbShape_s{		/* base type for all abstrct shapes */
+typedef struct AbShape_s {		/* base type for all abstrct shapes */
   void (*getBounds)(const struct AbShape_s *shape, const Vec2 *centerPos, Region *bounds);
   int (*check)(const struct AbShape_s *shape, const Vec2 *centerPos, const Vec2 *pixelLoc);
 } AbShape;

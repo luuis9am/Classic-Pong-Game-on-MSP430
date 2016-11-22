@@ -22,7 +22,6 @@ p2sw_init(unsigned char mask)
   P2IE = mask;      /* enable interrupts from switches */
   P2OUT |= mask;    /* pull-ups for switches */
   P2DIR &= ~mask;   /* set switches' bits for input */
-  P2IES |= mask;    
 
   switch_update_interrupt_sense();
 }

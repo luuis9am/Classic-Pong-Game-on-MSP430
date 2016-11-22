@@ -208,6 +208,6 @@ void wdt_c_handler()
     if (p2sw_read())
       redrawScreen = 1;
     count = 0;
-  }
+  } 
   P1OUT &= ~GREEN_LED;		    /**< Green LED off when cpu off */
 }

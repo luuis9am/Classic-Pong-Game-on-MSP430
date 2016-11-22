@@ -8,7 +8,7 @@ CC              = msp430-elf-gcc
 AS              = msp430-elf-as
 AR              = msp430-elf-ar
 
-abCircle.h chordVec.h libCircle.a: makeCircles.c abCircle.o  _abCircle.h Makefile
+abCircle_decls.h abCircle.h chordVec.h libCircle.a: makeCircles.c abCircle.o  _abCircle.h Makefile 
 	cc -o makeCircles makeCircles.c
 	rm -rf circles; mkdir circles
 	./makeCircles
@@ -25,7 +25,7 @@ install: libCircle.a abCircle.h chordVec.h
 
 
 clean:
-	rm -f libCircle.a abCircle.h chordVec.h *.o *.elf makeCircles
+	rm -f libCircle.a abCircle.h abCircle_decls.h chordVec.h *.o *.elf makeCircles
 	rm -rf circles
 
 circledemo.elf: circledemo.o libCircle.a
