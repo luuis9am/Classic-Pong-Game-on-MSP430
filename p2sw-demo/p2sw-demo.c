@@ -9,7 +9,7 @@
 
 
 /** Initializes everything, clears the screen, draws "hello" and the circle */
-main()
+void main()
 {
   configureClocks();
   lcd_init();
