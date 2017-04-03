@@ -17,21 +17,21 @@ Your game should meet the following minimum criteria:
 
 - dynamically render graphical elements that move
 -- including one original algorithmically rendered graphical element 
-- handle colissions properly with other shapes and area boundaries
+- handle colisions properly with other shapes and area boundaries
 - produce sounds triggered by game events
 -- in a manner that does not cause the game to pause
 - communicate with the player using text
-- include a state transition function in original assembly language
+- include a state machine written in assembly language
 - respond to user input (from buttons)
 
 Don't forget to properly document your source code and how to play the game.
 
 ## Grading Criteria
 
-Your lab will be graded based on the proficiency it demonstrates.
+Your lab will be graded based on the proficiencies it demonstrates.
 While we appreciate the complexity of an
 arcade quality game, our primary objective is that you demonstrate
-course-relevant skills such as 
+course-relevant skills including
 
 - relevant development tools such as make and emacs
 - use of timer interrupts to control program timing
