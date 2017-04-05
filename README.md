@@ -59,3 +59,30 @@ And behaviors that include
 - scores
  - that advance through multiple rounds of play
  - that the ball either moves in-front-of or behind
+
+## Libraries
+
+Several libraries are provided.  
+They can be installed by the default production of Makefile in the repostiory's 
+root directory, or by a "$make install" in each of their subdirs.
+
+- timerLib: Provides code to configure Timer A to generate watchdog timer interrupts at 250 Hz
+
+- lcdLib: Provides low-level lcd control primitives, defines several fonts, 
+and a simple demo program that uses them.
+
+- p2SwLib: Provides an interrupt-driven driver for the four switches on the LCD board and a demo program illustrating its intended functionality.
+
+- circleLib: Provides a circle model as a vector of demi-chord lengths,
+pre-computed circles with a range of radii, 
+and a demonstration program that renders a circle.
+
+- shapeLib: Provides an translatable model for shapes that can be translated 
+and rendered as layers.
+
+## Demonstration program
+
+- shape-motion-demo: A demonstration program that uses shapeLib to represent
+and render shapes that move.
+
+
