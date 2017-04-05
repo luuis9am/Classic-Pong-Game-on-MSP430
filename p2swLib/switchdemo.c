@@ -1,7 +1,9 @@
 #include <msp430.h>
+#include <sr.h>
 #include "p2switches.h"
 #define RED_LED BIT0
 
+int
 main()
 {
   p2sw_init(1);
