@@ -44,6 +44,7 @@ Layer layer0 = {
 
 u_int bgColor = COLOR_BLUE;
 
+int
 main()
 {
   configureClocks();

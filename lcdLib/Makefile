@@ -1,8 +1,8 @@
 all: libLcd.a lcddemo.elf
 
 CPU             = msp430g2553
-CFLAGS          = -mmcu=${CPU} -Os -I../h
-
+CFLAGS          = -mmcu=${CPU} -Os -I../h 
+LDFLAGS 	= -L/opt/ti/msp430_gcc/include -L../lib 
 #switch the compiler (for the internal make rules)
 CC              = msp430-elf-gcc
 AS              = msp430-elf-as
@@ -23,7 +23,7 @@ clean:
 	rm -f libLcd.a *.o *.elf
 
 lcddemo.elf: lcddemo.o libLcd.a 
-	$(CC) $(CFLAGS) $^ -L../lib -lTimer -o $@
+	$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@ -lTimer 
 
 load: lcddemo.elf
 	mspdebug rf2500 "prog $^"

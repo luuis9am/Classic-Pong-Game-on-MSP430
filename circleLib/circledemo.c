@@ -24,6 +24,7 @@ Layer layer0 = {		/**< Layer with an orange circle */
   &layer1,
 };
 
+int
 main()
 {
   configureClocks();

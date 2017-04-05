@@ -2,6 +2,7 @@ all: libCircle.a circledemo.elf
 
 CPU             = msp430g2553
 CFLAGS          = -mmcu=${CPU} -Os -I../h
+LDFLAGS		= -L../lib -L/opt/ti/msp430_gcc/include/ 
 
 #switch the compiler (for the internal make rules)
 CC              = msp430-elf-gcc
@@ -29,7 +30,7 @@ clean:
 	rm -rf circles
 
 circledemo.elf: circledemo.o libCircle.a
-	$(CC) $(CFLAGS) $^ -L../lib -lLcd -lTimer -lShape -o $@
+	$(CC) $(CFLAGS) $(LDFLAGS) $^  -lLcd -lTimer -lShape -o $@
 
 
 load: circledemo.elf

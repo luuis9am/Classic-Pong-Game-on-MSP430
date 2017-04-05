@@ -7,6 +7,7 @@
 #include "lcddraw.h"
 
 /** Initializes everything, clears the screen, draws "hello" and the circle */
+int
 main()
 {
   configureClocks();
