@@ -12,7 +12,7 @@ all:shapemotion.elf
 pong.elf: ${COMMON_OBJECTS} pong.o wdt_handler.o buzzer.o
 	${CC} -mmcu=${CPU}   -o $@ $^ -L../lib -lTimer -lLcd -lShape -lCircle -lp2sw
 
-load: pong.elf
+load:pong.elf
 	mspdebug rf2500 "prog $^"
 
 clean:
