@@ -31,8 +31,27 @@ Layer fieldLayer = {
   0
 };
 
+/* Moving Layer
+   Linked list of layer references
+   Velocity represents one iteration of change (direction & magnitude
+*/
 
+typedef struct MovLayer_s {
+  Layer *layer;
+  Vec2 velocity;
+  stuct MovLayer_s *next;
+} MovLayer;
 
+// initial value of {0,0} will be overwritten
+
+// Ball layer m11
+MovLayer m11 = { &Layer2, {5,5}, 0 };
+
+// Bottom paddle layer
+MovLayer m12 = { &Layer0, {5,5}, 0 };
+
+// upper paddle layer
+MovLayer m13 = { &Layer3, {5,5}, 0 };
 
 
 //Function movLayerDraw() & m1Advance() implemented from Lab3 "shape-motion_demo" shapemotion.c
@@ -75,7 +94,7 @@ void movLayerDraw(MovLayer *movLayers, Layer *layers)
 }	  
 
 
-Region fence = {{10,30}, {SHORT_EDGE_PIXELS-10, LONG_EDGE_PIXELS-10}}; /**< Create a fence region */
+Region fence = {{0,LONG_EDGE_PIXELS}, {SHORT_EDGE_PIXELS, LONG_EDGE_PIXELS}}; /**< Create a fence region */
 
 
 /** Advances a moving shape within a fence
@@ -83,7 +102,7 @@ Region fence = {{10,30}, {SHORT_EDGE_PIXELS-10, LONG_EDGE_PIXELS-10}}; /**< Crea
  *  \param ml The moving shape to be advanced
  *  \param fence The region which will serve as a boundary for ml
  */
-void mlAdvance(MovLayer *ml, Region *fence)
+void mlAdvance(MovLayer *ml, MovLayer *m11, MovLayer *m12, Region *fence)
 {
   Vec2 newPos;
   u_char axis;
@@ -95,6 +114,9 @@ void mlAdvance(MovLayer *ml, Region *fence)
       if ((shapeBoundary.topLeft.axes[axis] < fence->topLeft.axes[axis]) ||
 	  (shapeBoundary.botRight.axes[axis] > fence->botRight.axes[axis]) ) {
 	int velocity = ml->velocity.axes[axis] = -ml->velocity.axes[axis];
+
+	buzzer_set_period(0);
+	
 	newPos.axes[axis] += (2*velocity);
       }	/**< if outside of fence */
     } /**< for axis */
