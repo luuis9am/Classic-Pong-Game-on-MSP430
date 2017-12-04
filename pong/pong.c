@@ -7,9 +7,11 @@
 #include <shape.h>
 #include <abCircle.h>
 #include "buzzer.h"
-#include "p2switches.h"
 
 #define GREEN_LED BIT6
+
+#include <msp430.h>
+#include "p2switches.h"
 
 short goal = 1; // checks if any player has made a goal
 char player1Score = '0'; // player1 score tracker
