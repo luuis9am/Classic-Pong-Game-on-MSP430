@@ -9,7 +9,7 @@ AS              = msp430-elf-gcc -mmcu=${CPU} -c
 all:shapemotion.elf
 
 #additional rules for files
-pong.elf: ${COMMON_OBJECTS} pong.o wdt_handler.o buzzer.o
+pong.elf: ${COMMON_OBJECTS} game.o wdt_handler.o buzzer.o
 	${CC} -mmcu=${CPU}   -o $@ $^ -L../lib -lTimer -lLcd -lShape -lCircle -lp2sw
 
 load:pong.elf
