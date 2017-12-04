@@ -1,4 +1,4 @@
-/** \file pong_game.c
+/** \file pong.c
  *  A simple 2 player pong game which increases the ball speed anytime a paddle
  *  collides with it.
  */
