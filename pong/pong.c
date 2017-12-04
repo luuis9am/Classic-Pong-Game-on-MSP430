@@ -1,32 +1,40 @@
 //pong game
 
+/** \file pong_game.c
+ *  A simple 2 player pong game which increases the ball speed anytime a paddle
+ *  collides with it.
+ */
+
 #include <msp430.h>
 #include <libTimer.h>
 #include <lcdutils.h>
 #include <lcddraw.h>
+#include <p2switches.h>
 #include <shape.h>
 #include <abCircle.h>
 #include "buzzer.h"
-#include "p2switches.h"
 
 #define GREEN_LED BIT6
+
+#include <msp430.h>
+#include "p2switches.h"
 
 short goal = 1; // checks if any player has made a goal
 char player1Score = '0'; // player1 score tracker
 char player2Score = '0'; // player2 score tracker
-AbRect paddle = {abRectGetBounds, abRectCheck, {15,3}}; // 15x3 rectangle
-ABRect middleLine = {abRectGetBounds, abRectCheck, {61, 0}}; //middle court line
+AbRect paddle = {abRectGetBounds, abRectCheck, {15,3}}; /**< 15x3 rectangle */
+AbRect middleLine = {abRectGetBounds, abRectCheck, {61, 0}}; // horizontal line
 
-abRectOutline fieldOutline = {
-  abRectOutlineGetBounds, abRectOutlineCheck,
-  {screenWidth/2 - 2, screenHeight/2 -6}
+AbRectOutline fieldOutline = {	/* playing field */
+  abRectOutlineGetBounds, abRectOutlineCheck,   
+  {screenWidth/2 - 2, screenHeight/2 - 6}
 };
 
-// Layers
-Layer fieldLayer = {
+
+Layer fieldLayer = {		/* playing field as a layer */
   (AbShape *) &fieldOutline,
-  {screenWidth/2, screenHeight/2 -3}, //centered
-  {0,0}, {0,0}, //last & next pos
+  {screenWidth/2, screenHeight/2 -3},/**< center */
+  {0,0}, {0,0},				    /* last & next pos */
   COLOR_WHITE,
   0
 };
@@ -47,6 +55,7 @@ Layer layer3 = {		/**< Layer with a white paddle */
   &layer4,
 };
 
+
 Layer layer2 = {		/**< Layer with a green circle */
   (AbShape *)&circle6,
   {screenWidth/2, screenHeight/2}, /**< center */
@@ -54,6 +63,7 @@ Layer layer2 = {		/**< Layer with a green circle */
   COLOR_GREEN,
   &layer3,
 };
+
 
 Layer layer0 = {		/**< Layer with a white paddle */
   (AbShape *)&paddle,
@@ -63,32 +73,32 @@ Layer layer0 = {		/**< Layer with a white paddle */
   &layer2,
 };
 
-/* Moving Layer
-   Linked list of layer references
-   Velocity represents one iteration of change (direction & magnitude
-*/
-
+/** Moving Layer
+ *  Linked list of layer references
+ *  Velocity represents one iteration of change (direction & magnitude)
+ */
 typedef struct MovLayer_s {
   Layer *layer;
   Vec2 velocity;
-  stuct MovLayer_s *next;
+  struct MovLayer_s *next;
 } MovLayer;
 
-// initial value of {0,0} will be overwritten
+/* initial value of {0,0} will be overwritten */
 
-// Ball layer m11
-MovLayer m11 = { &Layer2, {5,5}, 0 };
+// Ball Layer ml1
+MovLayer ml1 = { &layer2, {5,5}, 0 };
 
-// Bottom paddle layer
-MovLayer m12 = { &Layer0, {5,5}, 0 };
+// Bottom paddle Layer
+MovLayer ml2 = { &layer0, {5,5}, 0 };
 
-// upper paddle layer
-MovLayer m13 = { &Layer3, {5,5}, 0 };
+// Upper paddle Layer
+MovLayer ml3 = { &layer3, {5,5}, 0 };
+
 
 
 //Function movLayerDraw() & m1Advance() implemented from Lab3 "shape-motion_demo" shapemotion.c
 
-void movLayerDraw(MovLayer *movLayers, Layer *layers)
+movLayerDraw(MovLayer *movLayers, Layer *layers)
 {
   int row, col;
   MovLayer *movLayer;
@@ -100,6 +110,7 @@ void movLayerDraw(MovLayer *movLayers, Layer *layers)
     l->pos = l->posNext;
   }
   or_sr(8);			/**< disable interrupts (GIE on) */
+
 
   for (movLayer = movLayers; movLayer; movLayer = movLayer->next) { /* for each moving layer */
     Region bounds;
@@ -124,10 +135,19 @@ void movLayerDraw(MovLayer *movLayers, Layer *layers)
   } // for moving layer being updated
 }	  
 
-Region fence = {{0,LONG_EDGE_PIXELS}, {SHORT_EDGE_PIXELS, LONG_EDGE_PIXELS}}; // Create a fence region
 
-/** Advances a moving shape within a fence
+
+Region fence = {{0,LONG_EDGE_PIXELS}, {SHORT_EDGE_PIXELS, LONG_EDGE_PIXELS}}; /**< Create a fence region */
+
+
+
+/** Modified function by Eric Freudenthal Advances a moving shape within a fence also
+ * incorporates logic statements to check if ball layer has collided with any of the paddles
+ * if it has it will increase the balls velocity. If it collides with the external fence
+ * score will be updated for the corresponding player, player who missed the ball will be
+ * highlighted in red
  *  
+ * 
  *  \param ml The moving shape to be advanced 
  *  \param ml1 The moving paddle to be advanced
  *  \param ml2 The moving paddle to be advanced
@@ -136,6 +156,7 @@ Region fence = {{0,LONG_EDGE_PIXELS}, {SHORT_EDGE_PIXELS, LONG_EDGE_PIXELS}}; //
 void mlAdvance(MovLayer *ml, MovLayer *ml1, MovLayer *ml2, Region *fence)
 {
   Vec2 newPos;
+  
   u_char axis;
   Region shapeBoundary;
 
@@ -156,6 +177,7 @@ void mlAdvance(MovLayer *ml, MovLayer *ml1, MovLayer *ml2, Region *fence)
       
       if( (ml->layer->posNext.axes[1] >= 134) && (ml->layer->posNext.axes[0] <=  ml1->layer->posNext.axes[0] + 18 && ml->layer->posNext.axes[0] >= ml1->layer->posNext.axes[0] - 18))
 	{
+
 	  int velocity = ml->velocity.axes[axis] = -ml->velocity.axes[axis];
 	  ml1->layer->color = COLOR_YELLOW;
 	  ml2->layer->color = COLOR_WHITE;
@@ -170,6 +192,7 @@ void mlAdvance(MovLayer *ml, MovLayer *ml1, MovLayer *ml2, Region *fence)
       // Check if ball has collided with paddle
         else   if( (ml->layer->posNext.axes[1] <= 21) && (ml->layer->posNext.axes[0] <=  ml2->layer->posNext.axes[0] + 18 && ml->layer->posNext.axes[0] >= ml2->layer->posNext.axes[0] - 18))
 	{
+
 	  int velocity = ml->velocity.axes[axis] = -ml->velocity.axes[axis];
 	  ml2->layer->color = COLOR_GREEN;
 	  ml1->layer->color = COLOR_WHITE;
@@ -193,6 +216,7 @@ void mlAdvance(MovLayer *ml, MovLayer *ml1, MovLayer *ml2, Region *fence)
 	    ml->velocity.axes[0] = 5;
 	    ml->layer->posNext = newPos;
 	    int redrawScreen = 1;
+
         }
 
       // Check if ball has collided with lower fence
@@ -208,20 +232,27 @@ void mlAdvance(MovLayer *ml, MovLayer *ml1, MovLayer *ml2, Region *fence)
 	      ml->layer->posNext = newPos;
 	      int redrawScreen = 1;
 	  }
+
        int redrawScreen = 1;
 
        //If no player goal keep on updating the ball's position
       if(goal != 1)
-      {
-       ml->layer->posNext =  newPos;     
-	}    
-    } /**< for axis */   
-  } /**< for ml */ 
+	{
+	
+       ml->layer->posNext =  newPos;
+     
+	}
+
+    } /**< for axis */
+    
+  } /**< for ml */
+  
 }
 
 
 u_int bgColor = COLOR_BLACK;     /**< The background color */
 int redrawScreen = 1;           /**< Boolean for whether screen needs to be redrawn */
+
 Region fieldFence;		/**< fence around playing field  */
 
 
@@ -245,13 +276,12 @@ void main()
     }
 
   //shapeInit();
-
   layerInit(&layer0);
   layerDraw(&layer0);
 
 
-    layerGetBounds(&fieldLayer, &fieldFence);  
-      
+    layerGetBounds(&fieldLayer, &fieldFence);
+
   enableWDTInterrupts();      /**< enable periodic interrupt */
   or_sr(0x8);	              /**< GIE (enable interrupts) */
 
@@ -259,9 +289,8 @@ void main()
   drawString5x7(72, 152, "Player2:", COLOR_GREEN, COLOR_BLACK);
   drawChar5x7(52,152, player1Score, COLOR_YELLOW, COLOR_BLACK);
   drawChar5x7(120,152, player2Score, COLOR_GREEN, COLOR_BLACK);
-  
-  for(;;) {
 
+  for(;;) {
     while (!redrawScreen) { /**< Pause CPU if screen doesn't need updating */
       P1OUT &= ~GREEN_LED;    /**< Green led off witHo CPU */
       or_sr(0x10);	      /**< CPU OFF */
@@ -288,9 +317,9 @@ void wdt_c_handler()
   count ++;
   if (count == 15) {
     mlAdvance(&ml1, &ml2, &ml3,  &fieldFence);
-    
+
 	  u_int switches = p2sw_read();
-	    
+
  if(!(switches & (1 << 1)))
 	      {
 	  if(ml2.layer->posNext.axes[0] <= 102)
@@ -311,7 +340,6 @@ void wdt_c_handler()
 	    goal = 0;
 	 }
      }
-     	  
 
    else if(!(switches & (1 << 2)))
      {
@@ -323,7 +351,7 @@ void wdt_c_handler()
            goal = 0;
 	 }
      }
-	  
+
    else if(!(switches & (1 << 3)))
      {
        if(ml3.layer->posNext.axes[0] <= 102)
@@ -334,6 +362,7 @@ void wdt_c_handler()
 	    goal = 0;
 	 }
      }
+
  redrawScreen = 1;
  count = 0;
   }
