@@ -6,16 +6,16 @@ LDFLAGS		= -L/opt/ti/msp430_gcc/include
 
 #switch the compiler (for the internal make rules)
 CC              = msp430-elf-gcc
-AS              = msp430-elf-as
+AS              = msp430-elf-gcc -mcu=${CPU} -c
 
-all: projectmain.elf
+all: shapemotion.elf
 
 #additional rules for files
-projectmain.elf: ${COMMON_OBJECTS} p1_interrupt_handler.o led.o switches.o buzzer.o projectmain.o ../lib/libTimer.a
-	${CC} ${CFLAGS} ${LDFLAGS} -o $@ $^
+pong.elf: ${COMMON_OBJECTS} pong.o wdt_handler.o buzzer.o projectmain.o
+	${CC} ${CFLAGS} ${LDFLAGS} -o $@ $^ -L../lib -;Timer -lLcd -lShape -lCircle -lp2sw
 
-load: projectmain.elf
-	mspdebug rf2500 "prog projectmain.elf"
+load: pong.elf
+	mspdebug rf2500 "prog $^"
 
 clean:
 	rm -f *.o *.elf

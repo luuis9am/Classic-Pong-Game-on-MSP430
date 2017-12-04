@@ -15,7 +15,7 @@ short goal = 1; // checks if any player has made a goal
 char player1Score = '0'; // player1 score tracker
 char player2Score = '0'; // player2 score tracker
 AbRect paddle = {abRectGetBounds, abRectCheck, {15,3}}; // 15x3 rectangle
-ABRect halfCourt = {abRectGetBounds, abRectCheck, {61, 0}}; //horizontal court line
+ABRect middleLine = {abRectGetBounds, abRectCheck, {61, 0}}; //middle court line
 
 abRectOutline fieldOutline = {
   abRectOutlineGetBounds, abRectOutlineCheck,
