@@ -248,16 +248,16 @@ void mlAdvance(MovLayer *ml, MovLayer *ml1, MovLayer *ml2, Region *fence) {
 }
 
 
-u_int bgColor = COLOR_VIOLET;     /**< The background color */
-int redrawScreen = 1;           /**< Boolean for whether screen needs to be redrawn */
+u_int bgColor = COLOR_VIOLET;     // The background color
+int redrawScreen = 1;           // Boolean for whether screen needs to be redrawn
 
-Region fieldFence;        /**< fence around playing field  */
+Region fieldFence;        // fence around playing field
 
 /** Initializes everything, enables interrupts and green LED,
  *  and handles the rendering for the screen
  */
 void main() {
-    P1DIR |= GREEN_LED;        /**< Green led on when CPU on */
+  P1DIR |= GREEN_LED;        // Green led on when CPU on
     P1OUT |= GREEN_LED;
 
     configureClocks();
