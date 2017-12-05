@@ -96,7 +96,7 @@ MovLayer ml3 = { &layer3, {5,5}, 0 };
 
 //Function movLayerDraw() & m1Advance() implemented from Lab3 "shape-motion_demo" shapemotion.c
 
-int movLayerDraw(MovLayer *movLayers, Layer *layers)
+movLayerDraw(MovLayer *movLayers, Layer *layers)
 {
   int row, col;
   MovLayer *movLayer;
