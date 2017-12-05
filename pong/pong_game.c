@@ -18,8 +18,12 @@
 #include "p2switches.h"
 
 short goal = 1; // checks if any player has made a goal
+char p1Score = 0; // player1 score tracker
+char p2Score = 0; // player2 score tracker
 char player1Score = '0'; // player1 score tracker
 char player2Score = '0'; // player2 score tracker
+char playGame = 0; //checks to see if game is still in play
+char gameOver = 0; //checks to see if game is over
 AbRect paddle = {abRectGetBounds, abRectCheck, {15,3}}; /**< 15x3 rectangle */
 AbRect middleLine = {abRectGetBounds, abRectCheck, {61, 0}}; // horizontal line
 
@@ -55,10 +59,10 @@ Layer layer3 = {		/**< Layer with a white paddle */
 
 
 Layer layer2 = {		/**< Layer with a green circle */
-  (AbShape *)&circle6,
+  (AbShape *)&circle4,
   {screenWidth/2, screenHeight/2}, /**< center */
   {0,0}, {0,0},				    /* last & next pos */
-  COLOR_GREEN,
+  COLOR_WHITE,
   &layer3,
 };
 
@@ -134,9 +138,7 @@ movLayerDraw(MovLayer *movLayers, Layer *layers)
 }	  
 
 
-
 Region fence = {{0,LONG_EDGE_PIXELS}, {SHORT_EDGE_PIXELS, LONG_EDGE_PIXELS}}; /**< Create a fence region */
-
 
 
 /** Modified function by Eric Freudenthal Advances a moving shape within a fence also
@@ -158,6 +160,9 @@ void mlAdvance(MovLayer *ml, MovLayer *ml1, MovLayer *ml2, Region *fence)
   u_char axis;
   Region shapeBoundary;
 
+   drawString5x7(3, 152, "Player1:", COLOR_YELLOW, COLOR_BLUE);
+   drawString5x7(72, 152, "Player2:", COLOR_GREEN, COLOR_BLUE);
+ 
   for (; ml; ml = ml->next) {
     vec2Add(&newPos, &ml->layer->posNext, &ml->velocity);
     abShapeGetBounds(ml->layer->abShape, &newPos, &shapeBoundary);
@@ -170,12 +175,10 @@ void mlAdvance(MovLayer *ml, MovLayer *ml1, MovLayer *ml2, Region *fence)
 	  
 	   newPos.axes[axis] += (2*velocity);
       }	/**< if outside of fence */
-
-      // Check if ball has collided with paddle
-      
+	  
+      // Check if ball has collided with top paddle
       if( (ml->layer->posNext.axes[1] >= 134) && (ml->layer->posNext.axes[0] <=  ml1->layer->posNext.axes[0] + 18 && ml->layer->posNext.axes[0] >= ml1->layer->posNext.axes[0] - 18))
 	{
-
 	  int velocity = ml->velocity.axes[axis] = -ml->velocity.axes[axis];
 	  ml1->layer->color = COLOR_YELLOW;
 	  ml2->layer->color = COLOR_WHITE;
@@ -183,14 +186,13 @@ void mlAdvance(MovLayer *ml, MovLayer *ml1, MovLayer *ml2, Region *fence)
 	  ml->velocity.axes[0] += 1;
           newPos.axes[axis] += (2*velocity);
         
-	  buzzer_set_period(1000);
+	  // buzzer_set_period(400);
 	  int redrawScreen = 1;
 	}
 
-      // Check if ball has collided with paddle
-        else   if( (ml->layer->posNext.axes[1] <= 21) && (ml->layer->posNext.axes[0] <=  ml2->layer->posNext.axes[0] + 18 && ml->layer->posNext.axes[0] >= ml2->layer->posNext.axes[0] - 18))
+      // Check if ball has collided with bottom paddle
+        else if( (ml->layer->posNext.axes[1] <= 21) && (ml->layer->posNext.axes[0] <=  ml2->layer->posNext.axes[0] + 18 && ml->layer->posNext.axes[0] >= ml2->layer->posNext.axes[0] - 18))
 	{
-
 	  int velocity = ml->velocity.axes[axis] = -ml->velocity.axes[axis];
 	  ml2->layer->color = COLOR_GREEN;
 	  ml1->layer->color = COLOR_WHITE;
@@ -198,95 +200,90 @@ void mlAdvance(MovLayer *ml, MovLayer *ml1, MovLayer *ml2, Region *fence)
 	  ml->velocity.axes[0] += 1;
           newPos.axes[axis] += (2*velocity);
 
-	  buzzer_set_period(5000);
+	  // buzzer_set_period(800);
 	  int redrawScreen = 1;
 	}
 
       // Check if ball has collided with upper fence
 	else if ( (ml->layer->posNext.axes[1] == 20))
 	{
-	    ml2->layer->color = COLOR_RED;
+	    ml2->layer->color = COLOR_VIOLET;
 	    player1Score ++;
-	    drawChar5x7(52,152, player1Score, COLOR_YELLOW, COLOR_BLACK);
+	    p1Score ++;
+            drawString5x7(3, 152, "Player1:", COLOR_YELLOW, COLOR_BLUE);
+            drawChar5x7(52,152, player1Score, COLOR_YELLOW, COLOR_BLUE);
+ 
 	    newPos.axes[0] = screenWidth/2;
 	    newPos.axes[1] = (screenHeight/2);
 	    goal = 1;
 	    ml->velocity.axes[0] = 5;
 	    ml->layer->posNext = newPos;
 	    int redrawScreen = 1;
-
         }
 
       // Check if ball has collided with lower fence
 	else if ( (ml->layer->posNext.axes[1] == 135))
 	  {
-	      ml1->layer->color = COLOR_RED;
+	      ml1->layer->color = COLOR_VIOLET;
 	      player2Score ++;
-	      drawChar5x7(120,152, player2Score, COLOR_GREEN, COLOR_BLACK);	   
+	      p2Score ++;
+
+	      drawString5x7(72, 152, "Player2:", COLOR_GREEN, COLOR_BLUE);
+	      drawChar5x7(120,152, player2Score, COLOR_GREEN, COLOR_BLUE);
+ 
 	      newPos.axes[0] = screenWidth/2;
 	      newPos.axes[1] = (screenHeight/2);
 	      goal = 1;
 	      ml->velocity.axes[0] = 5;
 	      ml->layer->posNext = newPos;
 	      int redrawScreen = 1;
+
 	  }
 
-       int redrawScreen = 1;
+      int redrawScreen = 1;
 
        //If no player goal keep on updating the ball's position
       if(goal != 1)
 	{
-	
        ml->layer->posNext =  newPos;
-     
 	}
-
     } /**< for axis */
-    
   } /**< for ml */
-  
 }
 
 
-u_int bgColor = COLOR_BLACK;     /**< The background color */
+u_int bgColor = COLOR_BLUE;     /**< The background color */
 int redrawScreen = 1;           /**< Boolean for whether screen needs to be redrawn */
 
 Region fieldFence;		/**< fence around playing field  */
-
 
 /** Initializes everything, enables interrupts and green LED, 
  *  and handles the rendering for the screen
  */
 void main()
 {
-  P1DIR |= GREEN_LED;		/**< Green led on when CPU on */		
+  P1DIR |= GREEN_LED;		/**< Green led on when CPU on */	      
   P1OUT |= GREEN_LED;
 
   configureClocks();
   lcd_init();
   shapeInit();
-  buzzer_init();
+  //buzzer_init();
   p2sw_init(15);
   
   if(goal == 1)
     {
         buzzer_set_period(0);
     }
-
+  
   //shapeInit();
   layerInit(&layer0);
   layerDraw(&layer0);
 
-
-    layerGetBounds(&fieldLayer, &fieldFence);
+  layerGetBounds(&fieldLayer, &fieldFence);
 
   enableWDTInterrupts();      /**< enable periodic interrupt */
   or_sr(0x8);	              /**< GIE (enable interrupts) */
-
-  drawString5x7(3, 152, "Player1:", COLOR_YELLOW, COLOR_BLACK);
-  drawString5x7(72, 152, "Player2:", COLOR_GREEN, COLOR_BLACK);
-  drawChar5x7(52,152, player1Score, COLOR_YELLOW, COLOR_BLACK);
-  drawChar5x7(120,152, player2Score, COLOR_GREEN, COLOR_BLACK);
 
   for(;;) {
     while (!redrawScreen) { /**< Pause CPU if screen doesn't need updating */
@@ -297,28 +294,57 @@ void main()
     /**< Green led on when CPU on */
     redrawScreen = 0;
  
-       movLayerDraw(&ml1, &layer0);
+      movLayerDraw(&ml1, &layer0);
       movLayerDraw(&ml2, &layer0);
-       movLayerDraw(&ml3, &layer0);
+      movLayerDraw(&ml3, &layer0);
   }
 }
 
 /** Watchdog timer interrupt handler. 15 interrupts/sec 
- *  Also has logic statements implemented for switch handlers on SW2-SW5 buttons
- *  SW2-SW3 will move the bottom paddle while SW4-SW5 will move the upper paddle
+ *  SW1-SW2 will move the bottom paddle while SW3-SW4 will move the upper paddle
  */
 
 void wdt_c_handler()
 {
   static short count = 0;
   P1OUT |= GREEN_LED;		      /**< Green LED on when cpu on */
+  static long wait = 0;
   count ++;
-  if (count == 15) {
+  u_int sw = p2sw_read();
+
+  while(++wait < 65){
+    drawString5x7(screenWidth/2-50,30, "Welcome to Pong", COLOR_BLACK, COLOR_BLUE);
+    drawString5x7(15,50, "S1: Yellow Left", COLOR_YELLOW, COLOR_BLUE);
+    drawString5x7(15,65, "S2: Yellow Right", COLOR_YELLOW, COLOR_BLUE);
+    drawString5x7(15,80, "S3: Green Left", COLOR_YELLOW, COLOR_BLUE);
+    drawString5x7(15,95, "S4: Green Right", COLOR_YELLOW, COLOR_BLUE);
+  }
+  if(wait == 65)
+    layerDraw(&layer0);
+
+  if(p1Score ==  5 || p2Score == 5){
+    char *winner;
+    char newGame = 1;
+    (p1Score == 5)?(winner = "Player1!"):(winner = "Player2!");
+    bgColor = COLOR_WHITE;
+    layerDraw(&layer0);
+    drawString5x7(screenWidth/2,screenHeight/2, "Game Over", COLOR_VIOLET, COLOR_WHITE);
+    drawString5x7(screenWidth/2,screenHeight/2+10, "WINNER", COLOR_VIOLET, COLOR_WHITE);
+    drawString5x7(screenWidth/2,screenHeight/2+20, winner, COLOR_VIOLET, COLOR_WHITE);
+    //song
+    while(newGame){
+      if (sw){
+	main();
+      }
+    }
+  }
+    
+  if (count == 20) {
     mlAdvance(&ml1, &ml2, &ml3,  &fieldFence);
 
 	  u_int switches = p2sw_read();
 
- if(!(switches & (1 << 1)))
+ if(!(switches & (1 << 1))) //move btm paddle left
 	      {
 	  if(ml2.layer->posNext.axes[0] <= 102)
 	 {	
@@ -328,7 +354,7 @@ void wdt_c_handler()
 	    goal = 0;
 	      }
 	      }
- else if(!(switches & (1 << 0)))
+ if(!(switches & (1 << 0))) //move btm paddle right
      {
        if(ml2.layer->posNext.axes[0] >= 27)
 	 {
@@ -339,7 +365,7 @@ void wdt_c_handler()
 	 }
      }
 
-   else if(!(switches & (1 << 2)))
+ if(!(switches & (1 << 2))) //move top paddle left
      {
        if(ml3.layer->posNext.axes[0] >= 26)
 	 {
@@ -350,7 +376,7 @@ void wdt_c_handler()
 	 }
      }
 
-   else if(!(switches & (1 << 3)))
+ if(!(switches & (1 << 3))) //move top paddle left
      {
        if(ml3.layer->posNext.axes[0] <= 102)
 	 {
@@ -364,6 +390,5 @@ void wdt_c_handler()
  redrawScreen = 1;
  count = 0;
   }
-  
   P1OUT &= ~GREEN_LED;		    /**< Green LED off when cpu off */
 }
