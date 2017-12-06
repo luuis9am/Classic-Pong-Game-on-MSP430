@@ -17,29 +17,24 @@ Pong is a game that allows 2 players to use the msp430 to direct paddles in the 
 
 ## Functions within pong_game.c
 
-### movLayerDraw(MovLayer *movLayers, Layer *layers)
+#### movLayerDraw(MovLayer *movLayers, Layer *layers)
 
 Function movLayerDraw() is taken from Lab3 demo "shape-motion_demo" shapemotion.c, which takes a given movLayer and a Layer which will be in charge of drawing and probing all moving layers.
 param movLayers 
 param layers
 
-### mlAdvance(MovLayer *ml, MovLayer *ml1, MovLayer *ml2, Region *fence)
+#### mlAdvance(MovLayer *ml, MovLayer *ml1, MovLayer *ml2, Region *fence)
 
 Function m1Advance() is taken from Lab3 "shape-motion_demo" shapemotion.c
 
-With modified functionality, m1Advance advances a moving shape within a vertical  while incorporating logic statements to check if the game ball has collided with any of the paddles
- * if it has it will increase the balls velocity. If it collides with the external fence
- * score will be updated for the corresponding player, player who missed the ball will be
- * highlighted in red
- *  
- * 
- *  \param ml The moving shape to be advanced 
- *  \param ml1 The moving paddle to be advanced
- *  \param ml2 The moving paddle to be advanced
- *  \param fence The region which will serve as a boundary for ml
- */
+With modified functionality, m1Advance advances a moving shape within a vertical fence while incorporating logic statements to check if the game ball has collided with any of the paddles or upper fence. If a paddle is struck the ball's velocity will then increase. If the ball collides with the external fence a point will be added to corresponding player.
 
-## wdt_c_handler()
+param ml The moving shape to be advanced 
+param ml1 The moving paddle to be advanced
+param ml2 The moving paddle to be advanced
+param fence The region which will serve as a boundary for ml
+ 
 
-Watchdog timer interrupt handler. 15 interrupts/sec 
-Also has logic statements implemented for switch handlers on SW2-SW5 buttons W2-SW3 will move the bottom paddle while SW4-SW5 will move the upper paddle
+#### wdt_c_handler()
+
+Watchdog timer interrupt handler serves as handler for 15 interrupts/sec. Logic statements have been implemented for switch handlers on SW2-SW5 buttons SW2-SW5 that will move the corresponding paddles.
