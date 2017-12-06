@@ -26,7 +26,7 @@ void buzzer_set_period(short cycles){
   CCR1 = cycles >> 1; //one half cycle
 }
 
-void gameOver(){
+void gameOver(int counter){
   switch(counter){
   	  case 0:
   		  buzzer_set_period(300);

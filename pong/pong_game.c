@@ -11,6 +11,7 @@
 #include <shape.h>
 #include <abCircle.h>
 #include "buzzer.h"
+#include "gameOver.h"
 
 #define GREEN_LED BIT6
 
@@ -23,7 +24,6 @@ char p2Score = 0; // player2 score tracker
 char player1Score = '0'; // player1 score tracker
 char player2Score = '0'; // player2 score tracker
 char playGame = 0; //checks to see if game is still in play
-char gameOver = 0; //checks to see if game is over
 AbRect paddle = {abRectGetBounds, abRectCheck, {15,3}}; /**< 15x3 rectangle */
 AbRect middleLine = {abRectGetBounds, abRectCheck, {61, 0}}; // horizontal line
 
@@ -100,7 +100,7 @@ MovLayer ml3 = { &layer3, {5,5}, 0 };
 
 //Function movLayerDraw() & m1Advance() implemented from Lab3 "shape-motion_demo" shapemotion.c
 
-movLayerDraw(MovLayer *movLayers, Layer *layers)
+int movLayerDraw(MovLayer *movLayers, Layer *layers)
 {
   int row, col;
   MovLayer *movLayer;
@@ -184,7 +184,7 @@ void mlAdvance(MovLayer *ml, MovLayer *ml1, MovLayer *ml2, Region *fence) {
                 ml->velocity.axes[0] += 1;
                 newPos.axes[axis] += (2 * velocity);
 
-                buzzer_set_period(200);
+                buzzer_set_period(600);
                 int redrawScreen = 1;
             }
 
@@ -248,16 +248,16 @@ void mlAdvance(MovLayer *ml, MovLayer *ml1, MovLayer *ml2, Region *fence) {
 }
 
 
-u_int bgColor = COLOR_VIOLET;     /**< The background color */
-int redrawScreen = 1;           /**< Boolean for whether screen needs to be redrawn */
+u_int bgColor = COLOR_VIOLET;     // The background color
+int redrawScreen = 1;           // Boolean for whether screen needs to be redrawn
 
-Region fieldFence;        /**< fence around playing field  */
+Region fieldFence;        // fence around playing field
 
 /** Initializes everything, enables interrupts and green LED,
  *  and handles the rendering for the screen
  */
 void main() {
-    P1DIR |= GREEN_LED;        /**< Green led on when CPU on */
+  P1DIR |= GREEN_LED;        // Green led on when CPU on
     P1OUT |= GREEN_LED;
 
     configureClocks();
@@ -304,7 +304,7 @@ void wdt_c_handler() {
     u_int sw = p2sw_read();
 
     //intro screen shows the controls for the next 5 seconds as well as a count down
-    while (++wait < 150) {
+    while (++wait < 185) {
         drawString5x7(screenWidth / 2 - 50, 30, "Welcome to Pong", COLOR_BLACK, COLOR_VIOLET);
         drawString5x7(15, 50, "S1: GOLD Left", COLOR_GOLD, COLOR_VIOLET);
         drawString5x7(15, 65, "S2: GOLD Right", COLOR_GOLD, COLOR_VIOLET);
@@ -317,13 +317,16 @@ void wdt_c_handler() {
         }else if(wait < 100){
         drawChar5x7(screenWidth/2-2,110,'2', COLOR_BLACK,COLOR_VIOLET);
         }else if(wait < 150){
-        drawString5x7(screenWidth/2-2,110,"Begin!", COLOR_BLACK,COLOR_VIOLET);
+        drawChar5x7(screenWidth/2-2,110,'1', COLOR_BLACK,COLOR_VIOLET);
+	} else{
+	drawString5x7(screenWidth/2-2,110,"Begin!", COLOR_BLACK,COLOR_VIOLET);
 	}
+	
     }
 
     //after 5 second delay the screen is redrawn and ready for play
     //game begins when one of he paddles is moved
-    if (wait == 150)
+    if (wait == 200)
         layerDraw(&layer0);
 
     //win condition is met when either player reaches a score of 5
@@ -338,9 +341,10 @@ void wdt_c_handler() {
         drawString5x7(screenWidth / 2, screenHeight / 2 + 10, "WINNER", COLOR_VIOLET, COLOR_WHITE);
         drawString5x7(screenWidth / 2, screenHeight / 2 + 20, winner, COLOR_VIOLET, COLOR_WHITE);
         //song
+	//gameOver(0);
         while (newGame) {
             if (sw) {
-                main();
+	            main();
             }
         }
     }
