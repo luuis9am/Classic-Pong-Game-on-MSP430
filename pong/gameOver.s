@@ -14,7 +14,7 @@ JT:	.word case0
 		.word case9
 		.word case10
 
-		.global gameOverSong
+		.global gameOver
 gameOver:
 		mov &counter, r12
 		add #1, r12
