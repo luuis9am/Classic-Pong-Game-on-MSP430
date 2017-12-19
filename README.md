@@ -1,3 +1,8 @@
+## Code created by me is within Game Folder "pong"
+
+
+- - - - - - - - - - - -  - - - - - - - - - - - - - - - - - - - - - -
+
 # Project 3: LCD Game
 ## Introduction
 
