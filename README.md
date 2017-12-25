@@ -1,9 +1,12 @@
-## Code created by me is within Game Folder "pong"
+# Classic Pong Game
+
+This project contains code from both the libraries provided by Dr. Eric Fruedenthal of UTEP and the project folder (pong_game) constructed by me using the demos as example to create an operational pong game using the MSP430.
 
 - - - - - - - - - - - -  - - - - - - - - - - - - - - - - - - - - - -
 
-# Project 3: LCD Game
-## Introduction
+### Per Eric Fruedenthal (Arch1 Lab Description)
+### Project 3: LCD Game
+### Introduction
 
 Continuing your effort to help ACME Solutions provide Christmas toys, 
 your task is now to develop a game for the LCD screen.  You should 
@@ -16,7 +19,7 @@ similar skills.  These proposals must approved by the course
 instructor in writing (e.g. email) at least two weeks before the
 project due date. 
 
-## Requirements
+### Requirements
 Your game should meet the following minimum criteria:
 
 - dynamically render graphical elements that move
@@ -30,7 +33,7 @@ Your game should meet the following minimum criteria:
 
 Don't forget to properly document your source code and how to play the game.
 
-## Grading Criteria
+### Grading Criteria
 
 Your lab will be graded based on the proficiencies it demonstrates.
 While we appreciate the complexity of an
@@ -64,7 +67,7 @@ And behaviors that include
  - that advance through multiple rounds of play
  - that the ball either moves in-front-of or behind
 
-## Libraries
+### Libraries
 
 Several libraries are provided.  
 They can be installed by the default production of Makefile in the repostiory's 
@@ -85,7 +88,7 @@ pre-computed circles as layers with a variety of radii,
 and a demonstration program that renders a circle.
 
 
-## Demonstration program
+### Demonstration program
 
 - shape-motion-demo: A demonstration program that uses shapeLib to represent
 and render shapes that move.
