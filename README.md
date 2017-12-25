@@ -1,6 +1,6 @@
 # Classic Pong Game
 
-This project contains code from both the libraries provided by Dr. Eric Fruedenthal of UTEP and the project folder (pong_game) constructed by me using the demos as example to create an operational pong game using the MSP430.
+This project contains code from both the libraries provided by Dr. Eric Fruedenthal of UTEP and the project folder (pong) constructed by me using the demos as example to create an operational pong game using the MSP430.
 
 - - - - - - - - - - - -  - - - - - - - - - - - - - - - - - - - - - -
 
